@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <unistd.h>
 #include "esp_sleep.h"
 #include "esp_err.h"
 #include "esp_log.h"
@@ -44,6 +45,7 @@ extern const uint8_t lp_core_main_bin_end[]   asm("_binary_lp_core_main_bin_end"
 #define OLED_MOSFET_GPIO    5    /* P-channel MOSFET gate for OLED power */
 #define RAIN_ADC_UNIT       ADC_UNIT_1
 #define RAIN_ADC_CHANNEL    ADC_CHANNEL_0  /* GPIO0 = ADC1_CH0 */
+#define RAIN_RESET_GPIO     8              /* 2N7002 gate — discharges 470nF peak-hold cap */
 
 /* Main core wake interval (1 minute) */
 #define MAIN_WAKE_INTERVAL_US  (60 * 1000 * 1000)
@@ -69,18 +71,35 @@ static void init_rain_adc(void)
     };
     ESP_ERROR_CHECK(adc_oneshot_config_channel(s_adc_handle, RAIN_ADC_CHANNEL, &chan_cfg));
 
-    ESP_LOGI(TAG, "Rain ADC initialized (ADC1_CH0 / GPIO0)");
+    /* GPIO8 — 2N7002 gate to discharge 470nF peak-hold cap after each read.
+     * LOW = MOSFET OFF (cap holds peak). HIGH = MOSFET ON (cap discharges).
+     * 10kΩ pulldown ensures OFF during deep sleep. */
+    gpio_set_direction(RAIN_RESET_GPIO, GPIO_MODE_OUTPUT);
+    gpio_set_level(RAIN_RESET_GPIO, 0);
+
+    ESP_LOGI(TAG, "Rain ADC initialized (ADC1_CH0 / GPIO0, reset on GPIO8)");
 }
 
+/* Read peak-hold cap: burst-read 16 samples (~2ms), take max, then discharge cap.
+ * The 470nF film cap holds the highest raindrop impact voltage since the last
+ * reset. 1N4148 reverse leakage (~5nA) gives a hold time well beyond 60s.
+ * After reading, pulse GPIO8 HIGH for 5ms to discharge C2 for a clean window. */
 static uint16_t read_rain_adc(void)
 {
-    int raw = 0;
-    esp_err_t ret = adc_oneshot_read(s_adc_handle, RAIN_ADC_CHANNEL, &raw);
-    if (ret != ESP_OK) {
-        ESP_LOGW(TAG, "Rain ADC read failed: %s", esp_err_to_name(ret));
-        return 0;
+    int raw = 0, max_raw = 0;
+    for (int i = 0; i < 16; i++) {
+        esp_err_t ret = adc_oneshot_read(s_adc_handle, RAIN_ADC_CHANNEL, &raw);
+        if (ret == ESP_OK && raw > max_raw) {
+            max_raw = raw;
+        }
     }
-    return (uint16_t)raw;
+
+    /* Discharge peak-hold cap for next interval */
+    gpio_set_level(RAIN_RESET_GPIO, 1);
+    usleep(5000);   /* 5ms — full discharge of 470nF through 2N7002 */
+    gpio_set_level(RAIN_RESET_GPIO, 0);
+
+    return (uint16_t)max_raw;
 }
 
 /* ---- LP core init ---- */

@@ -41,6 +41,62 @@ WindNerd ESP32  BME280 DS3231 SD card Piezo
 
 ---
 
+## Netlist
+
+Every net on the platform. Sorted by signal name.
+
+| Net | From | To | Notes |
+|-----|------|----|------|
+| **3V3** | HT7333 OUT | ESP32-C6 3V3, BME280 VCC, DS3231 VCC, SD VCC, OLED VCC (via Q2), WindNerd VCC, piezo GND ref | Main 3.3V rail |
+| **GND** | HT7333 GND | ESP32-C6 GND, BME280 GND, DS3231 GND, SD GND, OLED GND, WindNerd GND, piezo GND, Q1 source, Q2 source, R2 bottom | Common ground |
+| **VBAT** | ER34615 + (2 cells parallel) | HT7333 IN | 3.6V nominal, 19 Ah per cell, 38 Ah total |
+| **VBAT_GND** | ER34615 − | HT7333 GND | |
+| **WIND_TX** | WindNerd TX2 (yellow wire) | ESP32-C6 GPIO4 (LP_UART_RXD) | 9600 baud, 10kΩ pull-up on GPIO4 |
+| **WIND_TRIG** | ESP32-C6 GPIO1 (LP core) | WindNerd trigger input | LP core toggles every 5s to wake WindNerd |
+| **I2C_SDA** | ESP32-C6 GPIO6 | BME280 SDA, DS3231 SDA, OLED SDA | Shared bus, 0x76 + 0x68 + 0x3C |
+| **I2C_SCL** | ESP32-C6 GPIO7 | BME280 SCL, DS3231 SCL, OLED SCL | Shared bus |
+| **SPI_SCK** | ESP32-C6 GPIO2 | SD SCK | 10kΩ pull-down (idle low) |
+| **SPI_CS** | ESP32-C6 GPIO3 | SD CS | 10kΩ pull-up (idle high) |
+| **SPI_MOSI** | ESP32-C6 GPIO18 | SD MOSI | |
+| **SPI_MISO** | ESP32-C6 GPIO19 | SD MISO | |
+| **RAIN_ADC** | Piezo peak-hold C2 (+) | ESP32-C6 GPIO0 (ADC1_CH0) | Via 10kΩ series resistor R1 |
+| **RAIN_RST** | ESP32-C6 GPIO8 | Q1 (2N7002) gate | HIGH 5ms pulse discharges C2. 10kΩ pulldown R2 to GND. |
+| **OLED_PWR** | Q2 (AO3401) drain | OLED VCC | P-channel MOSFET switches VCC to OLED |
+| **OLED_GATE** | ESP32-C6 GPIO5 | Q2 (AO3401) gate | LOW = OLED on, HIGH = OLED off. 10kΩ pull-up to 3V3. |
+| **ENC_A** | EC11 encoder A | ESP32-C6 GPIO14 | Rotary encoder clock phase A |
+| **ENC_B** | EC11 encoder B | ESP32-C6 GPIO20 | Rotary encoder data phase B |
+| **ENC_PSH** | EC11 encoder push | ESP32-C6 GPIO21 | Encoder push button, pull-up |
+| **CON_BTN** | CON button → GND | ESP32-C6 GPIO22 | Momentary, pull-up. Deep-sleep wake on falling edge. UI confirm. |
+| **BAK_BTN** | BAK button → GND | ESP32-C6 GPIO23 | Momentary, pull-up. UI back / enter sleep. |
+| **PIEZO+** | Piezo disc + terminal | D1 (1N4148) anode | AC signal from raindrop impacts |
+| **PIEZO−** | Piezo disc − terminal | GND | |
+| **CPUMP** | D1 cathode | C1 (1nF) top, D2 anode | Voltage doubler midpoint |
+| **PEAK** | D2 cathode | C2 (470nF film) top, R1 (10kΩ) → GPIO0 | Peak-hold node — highest impact voltage |
+| **CR1220+** | DS3231 BAT+ | CR1220 coin cell + | RTC backup battery |
+| **CR1220−** | DS3231 BAT− | CR1220 coin cell − | |
+| **SWD_CLK** | ST-Link CLK | WindNerd SWD CLK | Programming only |
+| **SWD_DIO** | ST-Link DIO | WindNerd SWD DIO | Programming only |
+| **SWD_RST** | ST-Link RST | WindNerd RST | Programming only |
+| **SWD_GND** | ST-Link GND | WindNerd GND | Programming only |
+| **USB_DP** | ESP32-C6 GPIO12 | USB-C D+ | Native USB programming. Do not use for anything else. |
+| **USB_DM** | ESP32-C6 GPIO13 | USB-C D− | Native USB programming. Do not use for anything else. |
+
+### Power tree
+
+```
+VBAT (3.6V, 38Ah)
+  └─ HT7333 LDO (3.3V, ~1µA Iq)
+       ├─ ESP32-C6 SuperMini (3V3 pin)
+       ├─ WindNerd Core (VCC)
+       ├─ BME280 (VCC)
+       ├─ DS3231 (VCC)
+       ├─ SD card (VCC)
+       ├─ Q2 AO3401 source → OLED VCC (when gated on)
+       └─ Piezo circuit (GND reference only — no DC power)
+```
+
+---
+
 ## Components
 
 ### 1. WindNerd Core (wind sensor + MCU)
@@ -97,26 +153,71 @@ A piezo disc is bonded to the underside of a flat rigid plate (acrylic, polycarb
 
 The piezo signal is bipolar AC (mV to several volts). A simple conditioning circuit biases it to VCC/2, clamps the peaks to protect the ADC, and optionally a peak detector holds the maximum between samples.
 
-#### Signal conditioning circuit (v1 — simplest)
+#### Signal conditioning circuit (v1 — passive peak-hold with voltage doubler)
 
 ```
-Piezo disc ──┬── 10MΩ ── VCC/2 (voltage divider: 2× 10MΩ)
-            ├── Schottky clamps (BAT54S: to GND and 3.3V)
-            ├── 100nF cap to GND (noise filter)
-            └── ADC input (GPIO0)
+              D1 (1N4148)
+  Piezo ──┬──→|──┬──────────┐
+   (+/-)  │      │          │
+          │   C1  │  D2     │
+          │   1nF │ (1N4148)│
+          │      │  ┌──→|──┬─┴── 10kΩ ── GPIO0 (ADC)
+          │      └──┘      │
+          │               C2
+          │            470nF film
+          │               │
+          │          ┌────┴────┐
+          │          │ 2N7002  │  gate → GPIO8 (reset)
+          │          └────┬────┘  10kΩ pulldown on gate
+          │               │
+  Piezo ──┴───────────────┴── GND
 ```
 
-No op-amp. The piezo voltage for moderate-heavy rain is 50mV-5V. The ESP32-C6 ADC (12-bit, 0-3.3V) has ~0.8mV resolution. Light rain may be near the noise floor — acceptable for v1.
+**How it works:**
 
-The LP core reads the ADC at 5s intervals and records the **peak value** since the last read (firmware tracks max in a variable, resets after each sample). This gives a rain intensity proxy per 5s interval.
+- D1 + C1 form a charge pump (Greinacher voltage doubler) — captures both AC half-cycles from the piezo and doubles the peak voltage onto C2
+- D2 is the peak-hold diode — C2 charges to the highest impact voltage seen since last reset
+- C2 (470nF film) holds the peak — film dielectric for negligible self-leakage (hours)
+- 2N7002 N-MOSFET on GPIO8 discharges C2 after each ADC read — 5ms pulse to reset, clean window for next interval
+- 10kΩ on ADC input is series protection, not a bleed — the only discharge paths are 1N4148 reverse leakage (~5nA) and ADC sampling
+- 10kΩ pulldown on MOSFET gate ensures it stays OFF during deep sleep (gate = 0V)
+
+**Why no Schottky diodes:** 1N4148 has higher forward drop (0.7V vs 0.3V) but much lower reverse leakage (~5nA vs ~2µA). The piezo produces 5-20V open-circuit, so 0.7V forward drop is irrelevant. Lower leakage is critical — it's what lets us use a small hold cap (470nF) and still retain the peak across 60s.
+
+**Why no bleed resistor:** With MOSFET reset, the bleed resistor is an intentional leakage path that wastes signal. Removed. The MOSFET is the controlled discharge path.
+
+**Why voltage doubler:** The piezo output is AC. A single diode throws away half the energy. The doubler captures both half-cycles for ~2× signal — free improvement, one extra diode + cap.
+
+**Signal levels (estimated):**
+
+| Drop size | Charge (approx) | Voltage on C2 (doubled) | After 60s hold (5nA leak) |
+|-----------|-----------------|------------------------|--------------------------|
+| Light drizzle | ~50nC | ~210mV | ~146mV ✅ |
+| Moderate | ~150nC | ~640mV | ~576mV ✅ |
+| Heavy | ~300nC | ~1.28V | ~1.21V ✅ |
+
+ESP32-C6 ADC: 12-bit, 0-3.3V → 0.8mV resolution. Light drizzle (~146mV after hold) = ~182 ADC counts — well above noise floor.
+
+**BOM:**
+
+| Ref | Part | Value | Cost |
+|-----|------|-------|------|
+| D1, D2 | 1N4148 | signal diode | ~$0.02 |
+| C1 | 1nF ceramic | charge pump | ~$0.01 |
+| C2 | 470nF film | hold cap (low leakage) | ~$0.10 |
+| Q1 | 2N7002 | N-MOSFET reset | ~$0.03 |
+| R1 | 10kΩ | ADC series protection | ~$0.01 |
+| R2 | 10kΩ | MOSFET gate pulldown | ~$0.01 |
+| **Total** | | | **~$0.20** |
+
+**Firmware:** Main core reads ADC as burst (16 reads, take max), then pulses GPIO8 HIGH for 5ms to discharge C2. Read happens on 1-minute wake cycle. The peak-hold circuit captures the highest raindrop impact across the full 60s window.
 
 #### Signal conditioning circuit (v2 — with op-amp, if v1 lacks sensitivity)
 
 ```
-Piezo disc ──┬── 10MΩ bias to VCC/2
-            ├── Schottky clamps
+Piezo disc ──┬── 1N4148 clamps (to GND and 3.3V)
             └── OPA376 (gain = 10×, 0.9 µA quiescent)
-                 └── Peak detector (Schottky + 10nF cap + 10MΩ bleed)
+                 └── Peak detector (1N4148 + 10nF cap + 10MΩ bleed)
                       └── ADC input (GPIO0)
 ```
 
@@ -124,11 +225,14 @@ OPA376: 0.9 µA quiescent, rail-to-rail, $1.50. Gain of 10× brings mV-level dri
 
 #### Catch surface design
 
-- **Material:** 3mm polycarbonate or acrylic, ~50-100mm diameter
-- **Piezo:** 27mm or 35mm piezo disc (standard buzzer element, $0.50)
-- **Mounting:** Piezo bonded to center of disc underside with epoxy. Disc mounted level, exposed to sky.
+- **Material:** 3mm acrylic (PMMA), 60mm diameter — precut discs widely available, cheaper than polycarbonate, UV-stable. Stiffer than polycarbonate (sharper impact peaks) but won't shatter like glass. Some ringing after impact but less than glass — acceptable for v1.
+- **Piezo:** 35mm passive piezo disc element (brass + ceramic, no driver circuit, ~$0.50)
+- **Mounting:** Piezo bonded to center of plate underside with epoxy. 12.5mm rim around piezo for bonding + mounting. Disc mounted level, exposed to sky.
 - **Drainage:** Slight tilt or textured surface so water doesn't pool. Pooling dampens the signal.
-- **Size:** ~20 cm² catch area is the sweet spot — large enough to catch drops, small enough that simultaneous impacts rarely overlap (per the literature).
+- **Catch area:** 28 cm² (60mm diameter) — slightly above the 20 cm² literature sweet spot. Large enough to catch drops, small enough that simultaneous impacts rarely overlap even in heavy rain.
+- **Piezo size rationale:** 35mm chosen over 27mm for higher sensitivity (~2× capacitance → higher voltage per impact). Important for v1 with no op-amp — need maximum raw signal for light rain detection. 27mm is the fallback if 35mm is unavailable.
+- **Plate size rationale:** 60mm chosen over 50mm to give adequate rim space (12.5mm) for epoxy bonding around a 35mm piezo. 50mm would leave only 7.5mm rim — tight for reliable bonding.
+- **Material rationale:** Acrylic chosen over polycarbonate (cheaper precuts, UV-stable, stiffer = sharper peaks) and glass (shatters in hail). Aluminum disc (0.5mm) is the acoustic upgrade path if signal quality needs improvement.
 
 #### Calibration
 
@@ -161,9 +265,10 @@ For v1: **log raw ADC peak values** (peak amplitude per 5s interval). Calibrate 
 | Component | Current | Notes |
 |---|---|---|
 | Piezo disc (passive) | 0 µA | Generates its own voltage, no power needed |
-| Bias divider (2× 10MΩ) | ~0.16 µA | 3.3V / 20MΩ |
-| Op-amp (OPA376, if used) | 0.9 µA | Only needed for v2 with amplification |
-| **Total (v1, no op-amp)** | **~0.16 µA** | Negligible |
+| Peak-hold circuit (passive) | ~0 µA | 1N4148 leakage ~5nA, film cap self-discharge negligible. No DC path to VCC. |
+| 2N7002 gate pulldown | 0 µA | Gate held LOW in sleep, no current flow |
+| Op-amp (OPA376, if used in v2) | 0.9 µA | Only needed for v2 with amplification |
+| **Total (v1, peak-hold)** | **~0 µA** | Negligible — no bias divider needed |
 | **Total (v2, with op-amp)** | **~1.1 µA** | Still negligible |
 
 ### 6. MicroSD Card Module
@@ -241,7 +346,7 @@ The ESP32-C6 SuperMini breaks out **22 GPIO** with silkscreen labels 0–9, 12�
 | 5 | GPIO5 | **OLED VCC MOSFET gate** | Main core | strapping | ADC1_CH5, LP_GPIO5, LP_UART_TXD, MTDI | P-channel MOSFET gate. 10kΩ pull-up = OFF during boot. LOW = OLED on. |
 | 6 | GPIO6 | **I2C SDA (BME280 + DS3231 + OLED)** | Main core | strapping | ADC1_CH6, LP_GPIO6, MTCK, FSPICLK | Shared I2C bus, three devices (0x76, 0x68, 0x3C) |
 | 7 | GPIO7 | **I2C SCL (BME280 + DS3231 + OLED)** | Main core | strapping | LP_GPIO7, MTDO, FSPID | Shared I2C bus |
-| 8 | GPIO8 | — FREE (onboard RGB LED) | — | strapping | WS2812 RGB LED | Keep OFF in firmware. Desolder if sleep current too high. |
+| 8 | GPIO8 | **Rain peak-hold reset (2N7002 gate)** | Main core | strapping | WS2812 RGB LED | Pulses HIGH 5ms to discharge 470nF hold cap after ADC read. 10kΩ pulldown = OFF during sleep. Onboard RGB LED stays OFF. |
 | 9 | GPIO9 | — FREE (onboard BOOT button) | — | strapping | BOOT button | Internal pull-up. Avoid external loads. |
 | 12 | GPIO12 | — RESERVED | — | USB | USB_D− | Native USB (programming). Do not use. |
 | 13 | GPIO13 | — RESERVED | — | USB | USB_D+ | Native USB (programming). Do not use. |
@@ -261,11 +366,11 @@ The ESP32-C6 SuperMini breaks out **22 GPIO** with silkscreen labels 0–9, 12�
 | Category | Count | Silkscreen pins |
 |---|---|---|
 | Used (LP core) | 3 | 0 (ADC), 1 (trigger), 4 (UART RX) |
-| Used (main core) | 13 | 2 (SCK), 3 (CS), 5 (MOSFET), 6 (SDA), 7 (SCL), 14 (TRA), 18 (MOSI), 19 (MISO), 20 (TRB), 21 (PSH), 22 (CON), 23 (BAK) |
+| Used (main core) | 14 | 2 (SCK), 3 (CS), 5 (MOSFET), 6 (SDA), 7 (SCL), 8 (rain reset), 14 (TRA), 18 (MOSI), 19 (MISO), 20 (TRB), 21 (PSH), 22 (CON), 23 (BAK) |
 | Reserved (USB) | 2 | 12, 13 |
-| **Free** | **5** | 8, 9, 15, 16(TX), 17(RX) |
+| **Free** | **4** | 9, 15, 16(TX), 17(RX) |
 
-**5 free GPIO** for future expansion: LTE modem UART (16/17 TX/RX — perfect since we use native USB), battery voltage monitoring, status LED (15 onboard).
+**4 free GPIO** for future expansion: LTE modem UART (16/17 TX/RX — perfect since we use native USB), battery voltage monitoring, status LED (15 onboard).
 
 ### Pin assignment rationale
 
@@ -455,9 +560,11 @@ The Li-SOCl2 D-cell nominal voltage is 3.6V, fresh up to 3.67V. The 3.3V LDO dro
 |---|---|---|---|---|
 | P-channel MOSFET | AO3401 (SOT-23) or similar | 1 | OLED power gating — gates display VCC, controlled by GPIO5 (firmware) | $0.10 |
 | 10kΩ resistor | 10kΩ 0805 or through-hole | 6 | UART RX pull-up (GPIO4), trigger line pull-up (GPIO1), MOSFET gate pull-up (GPIO5), encoder PSH pull-up (GPIO21), CON pull-up (GPIO22), BAK pull-up (GPIO23) | $0.06 |
-| 10MΩ resistor | 10MΩ 0805 | 2 | Piezo bias divider (VCC/2) | $0.02 |
-| Schottky diode | BAT54S (SOT-23) | 1 | Piezo ADC clamp (protect GPIO0 from voltage spikes) | $0.05 |
-| 100nF capacitor | 100nF 0805 or ceramic disc | 1 | Piezo ADC noise filter | $0.02 |
+| 1N4148 diode | 1N4148 (DO-35 or SOD-323) | 2 | Peak-hold voltage doubler (D1 charge pump, D2 peak detector) | $0.02 |
+| 1nF capacitor | 1nF 0805 ceramic | 1 | Charge pump cap (C1) | $0.01 |
+| 470nF capacitor | 470nF film (low leakage) | 1 | Peak-hold cap (C2) — film dielectric for long hold time | $0.10 |
+| 2N7002 MOSFET | 2N7002 (SOT-23) | 1 | Peak-hold cap reset (GPIO8 gate, discharges C2 after ADC read) | $0.03 |
+| 10kΩ resistor | 10kΩ 0805 | 1 | Rain ADC series protection (R1) + 1 more for MOSFET gate pulldown (R2) — use 2 from the 10kΩ qty above | $0.01 |
 | 10nF capacitor | 10nF 0805 | 1 | Peak detector cap (v2 op-amp circuit, if used) | $0.02 |
 | 1µF capacitor | 1µF 0805 ceramic | 2 | LDO input + output bypass (one each) | $0.06 |
 | CR1220 coin cell | CR1220 (primary, non-rechargeable) | 1 | DS3231 RTC backup battery | $0.50 |
@@ -493,9 +600,9 @@ The Li-SOCl2 D-cell nominal voltage is 3.6V, fresh up to 3.67V. The 3.3V LDO dro
 3. **Radiation shield** — 3D-printed Stevenson screen for BME280, or mount sensor in vented enclosure?
 4. **Anemometer mounting** — pole mount height, cable length to enclosure, bearing maintenance interval.
 5. **Cold weather** — condensation inside enclosure (desiccant pack?), icing on anemometer (heated variant?), battery insulation.
-6. **5 free GPIO** — future expansion: LTE modem UART (16/17 TX/RX are perfect since we use native USB), battery voltage monitoring, status LED (15 onboard).
+6. **4 free GPIO** — future expansion: LTE modem UART (16/17 TX/RX are perfect since we use native USB), battery voltage monitoring, status LED (15 onboard). GPIO8 now used for rain peak-hold reset.
 7. **OLED power gating** — display VCC switched via P-channel MOSFET (AO3401), gate controlled by GPIO5 (firmware-driven). 10kΩ pull-up on gate keeps MOSFET off during boot/deep sleep. Zero current when off. Firmware sets GPIO5 LOW to power on OLED after wake, HIGH before returning to sleep.
-8. **Onboard LEDs** — GPIO8 (WS2812 RGB) and GPIO15 (status LED) must be kept OFF in firmware. WS2812 draws ~1 mA even showing black. Desolder if sleep current is too high.
+8. **Onboard LEDs** — GPIO8 (WS2812 RGB) is now used for rain peak-hold reset (2N7002 gate). The WS2812 LED must remain OFF in firmware — do not drive it. GPIO15 (status LED) must also stay OFF. Desolder WS2812 if its leakage affects sleep current or rain circuit.
 9. **Deep sleep current** — board measurements show tens of µA, higher than datasheet. LTH7R charger IC adds overhead. Measure actual current and update power budget.
 
 ---
