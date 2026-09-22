@@ -42,6 +42,7 @@ static httpd_handle_t s_server = NULL;
 static i2c_master_dev_handle_t s_ds3231_dev = NULL;
 static int s_con_gpio = -1;
 static volatile bool s_exit_requested = false;
+static bool s_wifi_netif_inited = false;  /* netif + event loop init once */
 
 /* ---- Captive portal HTML ----
  * Single-page app: file list, download buttons, clock sync.
@@ -392,8 +393,12 @@ static esp_err_t wifi_init_ap(void)
     }
     ESP_ERROR_CHECK(ret);
 
-    ESP_ERROR_CHECK(esp_netif_init());
-    ESP_ERROR_CHECK(esp_event_loop_create_default());
+    /* Init netif + event loop only once — they survive WiFi stop/start cycles */
+    if (!s_wifi_netif_inited) {
+        ESP_ERROR_CHECK(esp_netif_init());
+        ESP_ERROR_CHECK(esp_event_loop_create_default());
+        s_wifi_netif_inited = true;
+    }
     esp_netif_create_default_wifi_ap();
 
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
@@ -429,6 +434,7 @@ static void wifi_deinit_ap(void)
 {
     esp_wifi_stop();
     esp_wifi_deinit();
+    /* Don't deinit netif/event loop — they'll be reused on next wifi_start() */
     ESP_LOGI(TAG, "WiFi AP stopped");
 }
 

@@ -3,14 +3,16 @@
  *
  * Menu-driven interface for the OLED + encoder + buttons board.
  * Activated when CON button wakes the main core from deep sleep.
- * Provides: live sensor readout, file browser, clock sync, WiFi portal,
- * and sleep/halt options.
+ * Provides: live sensor readout, file browser, WiFi portal, clock sync,
+ * format SD, reboot, sleep, and halt options.
  *
  * Menu structure:
  *   [Live Data]    → real-time sensor readout (updates every 2s)
  *   [Files]        → list CSV files on SD card
  *   [WiFi Portal]  → start soft-AP + HTTP server for phone retrieval
- *   [Sync Clock]   → sync DS3231 from ESP32 system time (if set)
+ *   [Sync Clock]   → show current RTC time, instructions for WiFi sync
+ *   [Format SD]    → format SD card (confirm with CON)
+ *   [Reboot]       → reboot ESP32-C6 (confirm with CON)
  *   [Sleep]        → return to low-power mode (confirm with CON)
  *   [Halt]         → full system stop (confirm with CON, power cycle to resume)
  */

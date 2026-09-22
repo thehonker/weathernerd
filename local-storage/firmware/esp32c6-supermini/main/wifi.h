@@ -15,8 +15,8 @@
  *   POST /api/reboot     — reboot the ESP32-C6
  *   POST /api/halt        — halt system (permanent deep sleep, power cycle to resume)
  *
- * Blocks until the CON button is released or auto-sleep timeout fires,
- * then shuts down HTTP server + WiFi and returns to sleep.
+ * Blocks until the CON or BAK button is pressed, or the 5-minute auto-sleep
+ * timeout fires, then shuts down HTTP server + WiFi and returns to sleep.
  */
 
 #pragma once
@@ -29,10 +29,11 @@
  * - Inits NVS, netif, WiFi soft-AP
  * - Mounts SD card
  * - Starts HTTP server with file browser, clock sync, format, reboot, halt
- * - Blocks until the CON button is released (checked via GPIO polling)
+ * - Blocks until the CON or BAK button is pressed (checked via GPIO polling)
+ *   or the 5-minute auto-sleep timeout fires
  *
  * @param ds3231_dev  DS3231 handle for clock sync (may be NULL)
- * @param con_gpio    GPIO pin for CON button (active low, polled for release)
+ * @param con_gpio    GPIO pin for CON button (active low, polled for press)
  *
- * Returns ESP_OK when CON button is released and sleep is complete. */
+ * Returns ESP_OK on normal exit (button press or timeout). */
 esp_err_t wifi_start(i2c_master_dev_handle_t ds3231_dev, int con_gpio);

@@ -45,6 +45,7 @@ typedef struct {
 wind_sample_t sample_buffer[SAMPLES_PER_FLUSH];
 uint16_t sample_write_idx;
 uint16_t sample_count;
+uint8_t  buffer_ready;  /* Set by LP core when buffer is full, cleared by main core */
 
 /* ---- WindNerd trigger ---- */
 
@@ -143,12 +144,23 @@ int main(void)
             sample_count++;
         }
 
-        /* 5. After 12 samples, wake the main core */
+        /* 5. After 12 samples, wake the main core.
+         * Set buffer_ready so main core knows data is available.
+         * Wait for main core to clear it before overwriting (race condition prevention). */
         if (sample_write_idx == 0 && sample_count == SAMPLES_PER_FLUSH) {
+            buffer_ready = 1;
             ulp_lp_core_wakeup_main_processor();
         }
 
-        /* 6. Halt — LP timer will wake us in 5 seconds */
+        /* 6. If buffer was consumed by main core, reset for next cycle.
+         * This check happens at the top of the next 5s loop iteration —
+         * by then the main core has had plenty of time to read the buffer. */
+        if (buffer_ready == 0 && sample_count == SAMPLES_PER_FLUSH) {
+            sample_count = 0;
+            sample_write_idx = 0;
+        }
+
+        /* 7. Halt — LP timer will wake us in 5 seconds */
         ulp_lp_core_halt();
     }
 

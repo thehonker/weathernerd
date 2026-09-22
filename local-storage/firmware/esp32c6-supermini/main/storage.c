@@ -59,22 +59,29 @@ static void build_daily_path(char *buf, size_t buflen, uint32_t epoch, bool is_w
 }
 
 /* Ensure the CSV file has a header row.
- * Called after opening a file for append — if file is empty (size 0),
- * writes the header. */
+ * Called after opening a file for append — if file is new or empty,
+ * writes the header first. */
 static void ensure_header(const char *path, const char *header)
 {
     struct stat st;
     if (stat(path, &st) != 0) {
-        /* File doesn't exist yet — header will be written by first append */
+        /* File doesn't exist yet — write header to create it */
+        FILE *f = fopen(path, "w");
+        if (f) {
+            fprintf(f, "%s\n", header);
+            fclose(f);
+        }
         return;
     }
     if (st.st_size == 0) {
+        /* File exists but is empty — write header */
         FILE *f = fopen(path, "w");
         if (f) {
             fprintf(f, "%s\n", header);
             fclose(f);
         }
     }
+    /* File exists and has data — header already written, nothing to do */
 }
 
 /* ---- Public API ---- */

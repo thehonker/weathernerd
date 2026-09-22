@@ -100,7 +100,8 @@ esp_err_t ds3231_get_time(i2c_master_dev_handle_t dev, uint32_t *epoch)
         return ESP_OK;
     }
 
-    /* Convert to Unix epoch via struct tm */
+    /* Convert to Unix epoch via struct tm.
+     * Use timegm() (UTC, no timezone offset) — the DS3231 stores UTC time. */
     struct tm tm = {
         .tm_sec  = sec,
         .tm_min  = min,
@@ -111,7 +112,7 @@ esp_err_t ds3231_get_time(i2c_master_dev_handle_t dev, uint32_t *epoch)
         .tm_isdst = 0,
     };
 
-    time_t t = mktime(&tm);
+    time_t t = timegm(&tm);
     *epoch = (uint32_t)t;
 
     ESP_LOGD(TAG, "DS3231 time: %04d-%02d-%02d %02d:%02d:%02d → epoch %u",

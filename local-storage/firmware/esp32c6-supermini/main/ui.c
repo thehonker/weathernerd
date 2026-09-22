@@ -2,7 +2,8 @@
  * WeatherNerd — Interactive UI implementation
  *
  * Menu-driven OLED interface with encoder + button navigation.
- * Six menu items: Live Data, Files, WiFi Portal, Sync Clock, Sleep, Halt.
+ * Eight menu items: Live Data, Files, WiFi Portal, Sync Clock,
+ * Format SD, Reboot, Sleep, Halt.
  * Auto-sleep after 60s inactivity.
  */
 
@@ -25,7 +26,8 @@
 
 static const char *TAG = "ui";
 
-/* OLED MOSFET gate pin */
+/* OLED MOSFET gate pin — used for power-off on exit.
+ * Power-on is handled by caller (main.c) before ui_run() is called. */
 #define OLED_MOSFET_GPIO  5
 
 /* Auto-sleep timeout */
@@ -56,11 +58,6 @@ static const char *menu_labels[MENU_COUNT] = {
 };
 
 /* ---- OLED power control ---- */
-
-static void oled_power_on(void)
-{
-    gpio_set_level(OLED_MOSFET_GPIO, 0);  /* LOW = MOSFET on */
-}
 
 static void oled_power_off(void)
 {
@@ -264,28 +261,29 @@ static void sync_clock(i2c_master_dev_handle_t oled_dev,
 
     oled_clear();
     oled_set_cursor(0, 0);
-    oled_puts("Sync Clock");
+    oled_puts("Clock Sync");
     oled_set_cursor(0, 2);
     if (epoch > 0) {
+        /* Show UTC time from epoch */
+        uint32_t s = epoch % 60;
+        uint32_t m = (epoch / 60) % 60;
+        uint32_t h = (epoch / 3600) % 24;
         char buf[17];
-        snprintf(buf, sizeof(buf), "Now: %lu", (unsigned long)epoch);
+        snprintf(buf, sizeof(buf), "UTC %02lu:%02lu:%02lu",
+                 (unsigned long)h, (unsigned long)m, (unsigned long)s);
         oled_puts(buf);
     } else {
         oled_puts("RTC not set");
     }
     oled_set_cursor(0, 4);
-    oled_puts("CON=set ESP time");
+    oled_puts("Use WiFi portal");
     oled_set_cursor(0, 5);
+    oled_puts("to sync clock");
+    oled_set_cursor(0, 7);
     oled_puts("BAK=back");
     oled_render(oled_dev);
 
-    input_event_t ev = input_wait_event(10000);
-    if (ev == INPUT_CON_PRESS) {
-        /* Set DS3231 from ESP system time (only useful if ESP time is set,
-         * e.g. via SNTP after WiFi — for now, just show a message) */
-        render_status(oled_dev, "Use WiFi portal", "to sync clock");
-        input_wait_event(3000);
-    }
+    input_wait_event(10000);
 }
 
 /* ---- Main UI loop ---- */
@@ -294,19 +292,8 @@ esp_err_t ui_run(i2c_master_dev_handle_t oled_dev,
                  i2c_master_dev_handle_t ds3231_dev,
                  i2c_master_dev_handle_t bme280_dev)
 {
-    /* Configure MOSFET pin as output and power on OLED */
-    gpio_config_t mosfet_cfg = {
-        .pin_bit_mask = (1ULL << OLED_MOSFET_GPIO),
-        .mode = GPIO_MODE_OUTPUT,
-        .pull_up_en = GPIO_PULLUP_ENABLE,
-        .pull_down_en = GPIO_PULLDOWN_DISABLE,
-        .intr_type = GPIO_INTR_DISABLE,
-    };
-    gpio_config(&mosfet_cfg);
-    oled_power_on();
-    vTaskDelay(pdMS_TO_TICKS(50));  /* OLED power-up time */
-
-    /* Init input handler */
+    /* OLED is already powered on and initialized by caller (main.c).
+     * We just init input and run the menu loop. */
     input_init();
     input_reset_activity();
 

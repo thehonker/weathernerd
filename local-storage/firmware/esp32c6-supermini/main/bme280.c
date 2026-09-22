@@ -104,19 +104,15 @@ static esp_err_t read_calibration(i2c_master_dev_handle_t dev)
     s_calib.dig_H1 = hbuf[0];
     s_calib.dig_H2 = (int16_t)(hbuf[2] << 8 | hbuf[1]);
     s_calib.dig_H3 = hbuf[3];
-    /* dig_H4: 12-bit signed, bits [11:4] in E4, [3:0] in upper nibble of E5 */
-    s_calib.dig_H4 = (int16_t)((hbuf[4] << 4) | (hbuf[5] & 0x0F));
-    /* dig_H5: 12-bit signed, bits [11:4] in E6, [3:0] in lower nibble of E5 */
-    s_calib.dig_H5 = (int16_t)((hbuf[6] << 4) | (hbuf[5] >> 4));
-    s_calib.dig_H6 = (int8_t)hbuf[6] & 0xFF;  /* Not right — H6 is at 0xE7 */
-
-    /* Fix: dig_H6 is a signed 8-bit value at register 0xE7 (hbuf index 6 is E7,
-     * but we already used it for H5 upper bits). Need to re-read 0xE7 separately. */
-    uint8_t h6_raw;
-    ret = bme280_read_reg(dev, 0xE7, &h6_raw);
-    if (ret == ESP_OK) {
-        s_calib.dig_H6 = (int8_t)h6_raw;
-    }
+    /* dig_H4: 12-bit signed, bits [11:4] in E4, [3:0] in upper nibble of E5
+     *   hbuf[3]=0xE4, hbuf[4]=0xE5 */
+    s_calib.dig_H4 = (int16_t)((hbuf[3] << 4) | (hbuf[4] & 0x0F));
+    /* dig_H5: 12-bit signed, bits [11:4] in E6, [3:0] in lower nibble of E5
+     *   hbuf[5]=0xE6, hbuf[4]=0xE5 */
+    s_calib.dig_H5 = (int16_t)((hbuf[5] << 4) | (hbuf[4] >> 4));
+    /* dig_H6: signed 8-bit at 0xE7
+     *   hbuf[6]=0xE7 */
+    s_calib.dig_H6 = (int8_t)hbuf[6];
 
     ESP_LOGD(TAG, "Calibration: T1=%u T2=%d T3=%d P1=%u..P9=%d H1=%u H2=%d H3=%u H4=%d H5=%d H6=%d",
              s_calib.dig_T1, s_calib.dig_T2, s_calib.dig_T3,

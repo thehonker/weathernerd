@@ -12,7 +12,6 @@
 #include "oled.h"
 
 #include <string.h>
-#include <stdlib.h>
 #include "esp_log.h"
 
 static const char *TAG = "oled";
@@ -37,14 +36,13 @@ static esp_err_t oled_write_cmd(i2c_master_dev_handle_t dev, uint8_t cmd)
 
 static esp_err_t oled_write_data(i2c_master_dev_handle_t dev, const uint8_t *data, size_t len)
 {
-    /* For bulk data, prepend 0x40 (Co=0, D/C=1 → data) */
-    uint8_t *buf = malloc(len + 1);
-    if (!buf) return ESP_ERR_NO_MEM;
-    buf[0] = 0x40;
-    memcpy(buf + 1, data, len);
-    esp_err_t ret = i2c_master_transmit(dev, buf, len + 1, 200);
-    free(buf);
-    return ret;
+    /* Use static buffer to avoid malloc/free per page render.
+     * Max page data = 128 bytes + 1 control byte = 129 bytes. */
+    static uint8_t s_i2c_buf[OLED_WIDTH + 1];
+    if (len > OLED_WIDTH) len = OLED_WIDTH;  /* safety */
+    s_i2c_buf[0] = 0x40;  /* Co=0, D/C=1 → data */
+    memcpy(&s_i2c_buf[1], data, len);
+    return i2c_master_transmit(dev, s_i2c_buf, len + 1, 200);
 }
 
 /* ---- Public API ---- */

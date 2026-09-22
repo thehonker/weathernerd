@@ -11,7 +11,9 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "esp_sleep.h"
 #include "esp_err.h"
 #include "esp_log.h"
@@ -189,8 +191,7 @@ static void init_oled(void)
         return;
     }
 
-    /* Turn display off — it will be powered on when UI starts */
-    oled_display_off(s_oled_dev);
+    /* Display is ON after oled_init() — leave it on, UI will use it immediately */
 }
 
 /* ---- Sample flush ---- */
@@ -249,8 +250,24 @@ static void handle_con_button(void)
 {
     ESP_LOGI(TAG, "CON button pressed — entering interactive UI");
 
+    /* Power on OLED via MOSFET before initializing it.
+     * The MOSFET gate has a 10k pull-up so OLED is OFF during sleep. */
+    gpio_config_t mosfet_cfg = {
+        .pin_bit_mask = (1ULL << OLED_MOSFET_GPIO),
+        .mode = GPIO_MODE_OUTPUT,
+        .pull_up_en = GPIO_PULLUP_ENABLE,
+        .pull_down_en = GPIO_PULLDOWN_DISABLE,
+        .intr_type = GPIO_INTR_DISABLE,
+    };
+    gpio_config(&mosfet_cfg);
+    gpio_set_level(OLED_MOSFET_GPIO, 0);  /* LOW = MOSFET on */
+    vTaskDelay(pdMS_TO_TICKS(50));  /* OLED power-up time */
+
+    /* Init OLED now that it has power */
+    init_oled();
     if (!s_oled_dev) {
-        ESP_LOGE(TAG, "OLED not initialized — cannot start UI");
+        ESP_LOGE(TAG, "OLED init failed — cannot start UI");
+        gpio_set_level(OLED_MOSFET_GPIO, 1);  /* Power off OLED */
         return;
     }
 
@@ -291,19 +308,26 @@ static void wait_for_con_release(void)
 
 void app_main(void)
 {
+    /* Set timezone to UTC so mktime() produces correct epoch values.
+     * Without this, mktime() applies system TZ which defaults to UTC
+     * but could be changed by SNTP or setenv elsewhere. */
+    setenv("TZ", "UTC0", 1);
+    tzset();
+
     uint32_t wakeup_causes = esp_sleep_get_wakeup_causes();
 
-    if (wakeup_causes == 0) {
-        /* Cold boot */
-        ESP_LOGI(TAG, "Cold boot — initializing");
+    /* I2C bus + sensors + ADC lose state in deep sleep (CPU reset on wake).
+     * Must re-init on every wake, not just cold boot. */
+    i2c_bus_init();
+    init_ds3231();
+    init_bme280();
+    init_rain_adc();
 
-        i2c_bus_init();
-        init_ds3231();
-        init_bme280();
-        init_oled();
+    if (wakeup_causes == 0) {
+        /* Cold boot — init LP core + UART (only once; LP core persists across deep sleep) */
+        ESP_LOGI(TAG, "Cold boot — initializing");
         init_lp_uart();
         lp_core_init();
-        init_rain_adc();
 
         /* Configure GPIO22 (CON) as wakeup source — active low (falling edge) */
         gpio_set_direction(CON_BUTTON_GPIO, GPIO_MODE_INPUT);
@@ -319,9 +343,11 @@ void app_main(void)
         handle_con_button();
     }
 
-    /* Wait for CON button to be released before sleeping.
+    /* Wait for CON button to be released before sleeping (GPIO wake only).
      * Prevents immediate re-wakeup if user holds the button too long. */
-    wait_for_con_release();
+    if (wakeup_causes & BIT(ESP_SLEEP_WAKEUP_GPIO)) {
+        wait_for_con_release();
+    }
 
     /* Enable wakeup sources for next sleep cycle */
     esp_sleep_enable_ulp_wakeup();
