@@ -187,7 +187,7 @@ docker run --rm -v "$(pwd):/project" -w /project -u $(id -u) -e HOME=/tmp \
 | Interactive menu UI (6 items) | ✅ Written |
 | OLED power gating (MOSFET on GPIO5) | ✅ Written |
 | Halt option (full system stop) | ✅ Written |
-| Wind samples → SD card (ulp_ variable access) | 🔲 TODO |
+| Wind samples → SD card (ulp_ variable access) | ✅ Written |
 
 ## Why ESP-IDF, not Arduino?
 

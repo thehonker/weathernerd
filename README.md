@@ -98,10 +98,10 @@ Custom firmware replacing the factory WindNerd Core firmware. Drops power from ~
 
 ### ESP32-C6 SuperMini — ⚠️ WIP, untested — compiles, all features implemented
 
-ESP32-C6 datalogger firmware built with **ESP-IDF v6.1**. The LP RISC-V coprocessor handles the 5s wind sampling loop (WindNerd trigger + UART RX) while the main core sleeps. Main core wakes every 1 min for sensors + SD card flush. Interactive UI (OLED + encoder + buttons) triggered by CON button press — provides live data, file browser, WiFi portal, clock sync, sleep, and halt.
+ESP32-C6 datalogger firmware built with **ESP-IDF v6.1**. The LP RISC-V coprocessor handles the 5s wind sampling loop (WindNerd trigger + UART RX) while the main core sleeps. Main core wakes every 1 min for sensors + SD card flush. Interactive UI (OLED + encoder + buttons) triggered by CON button press — provides live data, file browser, WiFi portal, clock sync, format SD, reboot, sleep, and halt.
 
-- **Status:** All firmware modules written and compiling clean. LP core (trigger, UART, sample buffer, main wakeup). Main core (deep sleep, I2C bus, DS3231 RTC, BME280 with full compensation, rain ADC, SDSPI SD card logging, daily CSV files, env data writing, WiFi retrieval mode with captive portal, OLED driver, encoder + button input, interactive menu UI with 6 items, OLED power gating via MOSFET, halt option). Only wind sample flush from LP core shared memory remains.
-- **Binary:** 1.14 MB (37% of 3 MB factory partition — WiFi stack adds ~800 KB)
+- **Status:** All firmware modules written and compiling clean. Full data flow implemented: LP core samples wind every 5s → main core flushes to SD every 1 min. Interactive UI with 8 menu items. WiFi portal with file browser, clock sync, format SD, reboot, halt. Only hardware testing remains.
+- **Binary:** 1.15 MB (37% of 3 MB factory partition — WiFi stack adds ~800 KB)
 - **Build:** `./build.sh` (Docker, no host toolchain needed) → `build/esp32c6_weathernerd.bin`
 - **Flash:** `./flash.sh` (USB serial, esptool in Docker) or `./flash.sh --ci` (download from GitHub releases)
 - **CI/CD:** Auto-builds on push, publishes env image to GHCR + GitHub release with firmware binaries

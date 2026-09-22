@@ -194,6 +194,19 @@ static void init_oled(void)
     /* Display is ON after oled_init() — leave it on, UI will use it immediately */
 }
 
+/* ---- LP core shared memory access ----
+ *
+ * The LP core defines a packed wind_sample_t (5 bytes: u16 + u16 + u8).
+ * 12 packed samples = 60 bytes = 15 uint32_t words = ulp_sample_buffer[15].
+ * Main core must use a matching packed struct to read the raw bytes correctly.
+ */
+
+typedef struct {
+    uint16_t speed_mps_x10;
+    uint16_t direction_deg;
+    uint8_t  valid;
+} __attribute__((packed)) lp_wind_sample_t;
+
 /* ---- Sample flush ---- */
 
 static void flush_samples_to_sd(void)
@@ -235,10 +248,44 @@ static void flush_samples_to_sd(void)
         ESP_LOGE(TAG, "Failed to write env sample: %s", esp_err_to_name(ret));
     }
 
-    /* Wind samples: TODO wire up once ulp_ variable access is confirmed
-     * storage_write_wind_samples(epoch, (storage_wind_sample_t *)ulp_sample_buffer,
-     *                            ulp_sample_count, rain_adc);
-     */
+    /* Read wind samples from LP core shared memory.
+     * ulp_sample_buffer is 15 uint32_t words = 60 bytes = 12 packed samples.
+     * ulp_sample_count is the number of valid samples (0-12).
+     * ulp_buffer_ready is set by LP core when buffer is full. */
+    uint16_t lp_count = (uint16_t)ulp_sample_count;
+    if (lp_count > 0 && lp_count <= 12) {
+        const lp_wind_sample_t *lp_samples = (const lp_wind_sample_t *)ulp_sample_buffer;
+
+        /* Convert packed LP struct to storage struct (field-by-field, no padding issues) */
+        storage_wind_sample_t storage_samples[12];
+        int valid_count = 0;
+        for (int i = 0; i < lp_count; i++) {
+            if (lp_samples[i].valid) {
+                storage_samples[valid_count].speed_mps_x10 = lp_samples[i].speed_mps_x10;
+                storage_samples[valid_count].direction_deg = lp_samples[i].direction_deg;
+                storage_samples[valid_count].valid = 1;
+                valid_count++;
+            }
+        }
+
+        if (valid_count > 0) {
+            ESP_LOGI(TAG, "Writing %d wind samples to SD (of %d LP samples)",
+                     valid_count, lp_count);
+            ret = storage_write_wind_samples(epoch, storage_samples, valid_count, rain_adc);
+            if (ret != ESP_OK) {
+                ESP_LOGE(TAG, "Failed to write wind samples: %s", esp_err_to_name(ret));
+            }
+        } else {
+            ESP_LOGW(TAG, "No valid wind samples in LP buffer (count=%u)", lp_count);
+        }
+
+        /* Signal LP core that buffer has been consumed */
+        ulp_buffer_ready = 0;
+    } else if (lp_count == 0) {
+        ESP_LOGD(TAG, "No wind samples in LP buffer");
+    } else {
+        ESP_LOGW(TAG, "LP sample count out of range: %u", lp_count);
+    }
 
     storage_deinit();
     ESP_LOGI(TAG, "SD card flush complete");
