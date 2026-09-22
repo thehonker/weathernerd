@@ -59,7 +59,7 @@ Start with [hardware-design.md](local-storage/notes/hardware-design.md) for the 
 - **No solar** — at 0.10 mA average, the battery alone lasts decades. Solar adds complexity and failure modes for zero benefit.
 - **Two data streams** — wind+rain at 5s (LP core) and temp/RH/pressure at 1 min (main core). Separate daily CSV files. Temp changes slowly; 1 min is plenty.
 - **WiFi switch + OLED** — the station sleeps with zero UI. A physical switch wakes the main core, powers on the OLED via MOSFET, and starts a WiFi AP for data retrieval. Zero power when off.
-- **DIY piezo disdrometer** — no moving parts, $2 in parts, logs raw ADC peaks. Calibrate later against a reference gauge. v1 has no op-amp (simplest); v2 adds OPA376 if drizzle sensitivity is needed.
+- **SPI over SDIO for SD card** — GPIO18–23 are the ESP32-C6's native SDIO peripheral, but 4-bit SDIO needs 6 pins and would eat GPIO20/21 (encoder) and GPIO22 (WiFi switch). SPI mode uses 4 pins and the data rate is trivial (~838 KB/day, 70-byte appends once per minute). The SD card is asleep 55s out of every 60s — SDIO's speed advantage is irrelevant. The 2 saved pins keep the encoder and WiFi switch on safe, non-strapping GPIO.** — no moving parts, $2 in parts, logs raw ADC peaks. Calibrate later against a reference gauge. v1 has no op-amp (simplest); v2 adds OPA376 if drizzle sensitivity is needed.
 
 ## License
 
