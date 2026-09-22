@@ -28,6 +28,7 @@
 #include "driver/gpio.h"
 #include "storage.h"
 #include "ds3231.h"
+#include "dns_server.h"
 
 static const char *TAG = "wifi";
 
@@ -369,6 +370,26 @@ static esp_err_t handler_404(httpd_req_t *req, httpd_err_code_t error)
     return ESP_OK;
 }
 
+/* ---- Captive portal detection endpoints ----
+ * Phones probe these URLs on WiFi connect to check for internet.
+ * If they get a redirect instead of the expected response, the OS opens
+ * a captive portal browser window pointing at our / page.
+ *
+ *  Android:  /generate_204  (expects HTTP 204)
+ *  iOS/macOS: /hotspot-detect.html  (expects "<HTML><HEAD><TITLE>Success</TITLE></HEAD><BODY>Success</BODY></HTML>")
+ *  Windows:  /ncsi.txt  (expects "Microsoft NCSI")
+ *  Firefox:  /success.txt  (expects "success")
+ *
+ * We redirect all of them to / so the portal page pops up. */
+
+static esp_err_t handler_captive_redirect(httpd_req_t *req)
+{
+    httpd_resp_set_status(req, "302 Found");
+    httpd_resp_set_hdr(req, "Location", "/");
+    httpd_resp_sendstr(req, "");
+    return ESP_OK;
+}
+
 /* ---- WiFi soft-AP ---- */
 
 static void wifi_event_handler(void *arg, esp_event_base_t event_base,
@@ -479,6 +500,20 @@ static httpd_handle_t start_webserver(void)
         .uri = "/api/halt", .method = HTTP_POST, .handler = handler_halt,
     };
 
+    /* Captive portal detection endpoints — redirect to / */
+    static const httpd_uri_t uri_gen_204 = {
+        .uri = "/generate_204", .method = HTTP_GET, .handler = handler_captive_redirect,
+    };
+    static const httpd_uri_t uri_hotspot = {
+        .uri = "/hotspot-detect.html", .method = HTTP_GET, .handler = handler_captive_redirect,
+    };
+    static const httpd_uri_t uri_ncsi = {
+        .uri = "/ncsi.txt", .method = HTTP_GET, .handler = handler_captive_redirect,
+    };
+    static const httpd_uri_t uri_success = {
+        .uri = "/success.txt", .method = HTTP_GET, .handler = handler_captive_redirect,
+    };
+
     httpd_register_uri_handler(server, &uri_root);
     httpd_register_uri_handler(server, &uri_files);
     httpd_register_uri_handler(server, &uri_file_dl);
@@ -487,6 +522,10 @@ static httpd_handle_t start_webserver(void)
     httpd_register_uri_handler(server, &uri_format_sd);
     httpd_register_uri_handler(server, &uri_reboot);
     httpd_register_uri_handler(server, &uri_halt);
+    httpd_register_uri_handler(server, &uri_gen_204);
+    httpd_register_uri_handler(server, &uri_hotspot);
+    httpd_register_uri_handler(server, &uri_ncsi);
+    httpd_register_uri_handler(server, &uri_success);
     httpd_register_err_handler(server, HTTPD_404_NOT_FOUND, handler_404);
 
     ESP_LOGI(TAG, "HTTP server started on port %d", config.server_port);
@@ -570,6 +609,9 @@ esp_err_t wifi_start(i2c_master_dev_handle_t ds3231_dev, int con_gpio)
     /* Start exit monitor task — waits for CON/BAK press or 5min timeout */
     xTaskCreate(exit_monitor_task, "exit_mon", 2048, NULL, 1, NULL);
 
+    /* Start DNS server for captive portal hijack */
+    dns_server_start();
+
     /* Wait for exit signal */
     while (!s_exit_requested) {
         vTaskDelay(pdMS_TO_TICKS(500));
@@ -577,7 +619,8 @@ esp_err_t wifi_start(i2c_master_dev_handle_t ds3231_dev, int con_gpio)
 
     ESP_LOGI(TAG, "Exiting WiFi portal — entering low-power mode");
 
-    /* Sleep — stop HTTP server, WiFi, unmount SD */
+    /* Stop DNS server, HTTP server, WiFi, unmount SD */
+    dns_server_stop();
     httpd_stop(s_server);
     s_server = NULL;
     wifi_deinit_ap();
