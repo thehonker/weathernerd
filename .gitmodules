@@ -1,0 +1,3 @@
+[submodule "local-storage/firmware/windnerd-stm32g031f8/lib/Windnerd-Core"]
+	path = local-storage/firmware/windnerd-stm32g031f8/lib/Windnerd-Core
+	url = https://github.com/windnerd-labs/Windnerd-Core.git

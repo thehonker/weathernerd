@@ -1,0 +1,74 @@
+name: Build WindNerd STM32G031F8 firmware
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'local-storage/firmware/windnerd-stm32g031f8/**'
+  pull_request:
+    paths:
+      - 'local-storage/firmware/windnerd-stm32g031f8/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Compile STM32G031F8 firmware
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Build env Docker image
+        run: |
+          docker build \
+            -t ghcr.io/thehonker/weathnerd-windnerd-stm32g031f8-env:latest \
+            -t ghcr.io/thehonker/weathnerd-windnerd-stm32g031f8-env:${{ github.sha }} \
+            local-storage/firmware/windnerd-stm32g031f8/build-env
+
+      - name: Push env image to GHCR
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker push ghcr.io/thehonker/weathnerd-windnerd-stm32g031f8-env:latest
+          docker push ghcr.io/thehonker/weathnerd-windnerd-stm32g031f8-env:${{ github.sha }}
+
+      - name: Compile firmware
+        run: |
+          docker run --rm \
+            -v "$(pwd)/local-storage/firmware/windnerd-stm32g031f8:/firmware" \
+            ghcr.io/thehonker/weathnerd-windnerd-stm32g031f8-env:${{ github.sha }} \
+            /usr/local/bin/compile.sh
+
+      - name: Upload firmware artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windnerd-stm32g031f8-firmware
+          path: |
+            local-storage/firmware/windnerd-stm32g031f8/build/src.ino.bin
+            local-storage/firmware/windnerd-stm32g031f8/build/src.ino.elf
+          retention-days: 90
+
+      - name: Create release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: windnerd-stm32g031f8-${{ github.sha }}
+          name: WindNerd STM32G031F8 firmware (${{ github.sha }})
+          body: |
+            Firmware build from commit ${{ github.sha }}
+
+            ## Files
+            - `src.ino.bin` — flashable binary, write to STM32G031F8 via ST-Link SWD at 0x08000000
+            - `src.ino.elf` — debug symbols
+
+            ## Flash
+            ```bash
+            weathernerd/local-storage/firmware/windnerd-stm32g031f8/flash.sh --ci ${{ github.sha }}
+            ```
+          files: |
+            local-storage/firmware/windnerd-stm32g031f8/build/src.ino.bin
+            local-storage/firmware/windnerd-stm32g031f8/build/src.ino.elf

@@ -1,5 +1,7 @@
 # WeatherNerd
 
+[![WindNerd STM32G031F8 firmware](https://github.com/thehonker/weathernerd/actions/workflows/build-windnerd-stm32g031f8.yml/badge.svg)](https://github.com/thehonker/weathernerd/actions/workflows/build-windnerd-stm32g031f8.yml)
+
 Low-power, long-duration weather stations built around the [WindNerd Core](https://windnerd.net) anemometer and ESP32-C6 dataloggers.
 
 ## What is this?
@@ -33,24 +35,48 @@ Design docs for the home station will be added when we start that phase. The rem
 
 ## Repo layout
 
-```
+```none
 weathernerd/
 ├── README.md              ← you are here
 ├── LICENSE
+├── .github/workflows/
+│   └── build-windnerd-stm32g031f8.yml  ← CI/CD for STM32 firmware
 └── local-storage/
-    └── notes/
-        ├── hardware-design.md   ← pin allocation, wiring, BOM, component selection
-        ├── power-budget.md      ← current draw analysis, battery sizing
-        └── storage-budget.md    ← data volume, SD card selection, file strategy
+    ├── notes/
+    │   ├── hardware-design.md   ← pin allocation, wiring, BOM, component selection
+    │   ├── power-budget.md      ← current draw analysis, battery sizing
+    │   └── storage-budget.md    ← data volume, SD card selection, file strategy
+    └── firmware/
+        └── windnerd-stm32g031f8/  ← custom WindNerd Core firmware (⚠️ WIP, untested)
+            ├── README.md           ← firmware docs, build & flash instructions
+            ├── build.sh            ← build locally (Docker)
+            ├── flash.sh            ← flash via ST-Link (Docker)
+            ├── src/src.ino         ← firmware source
+            ├── lib/Windnerd-Core/  ← git submodule
+            └── build-env/          ← Dockerfile + compile/flash scripts
 ```
-
-Firmware directories will be added as development progresses:
-- `windnerd-firmware/` — custom STM32G031F8 firmware (STOP mode + GPIO trigger)
-- `esp32-c6-firmware/` — ESP32-C6 firmware (LP core sampling + main core logging + WiFi retrieval + OLED UI)
 
 ## Design docs
 
-Start with [hardware-design.md](local-storage/notes/hardware-design.md) for the full system overview, pin allocation, and BOM. [power-budget.md](local-storage/notes/power-budget.md) covers current draw and battery life. [storage-budget.md](local-storage/notes/storage-budget.md) covers data volumes and SD card selection.
+Start with [hardware-design.md](local-storage/notes/hardware-design.md) for the full system overview, pin allocation, and BOM.
+[power-budget.md](local-storage/notes/power-budget.md) covers current draw and battery life.
+[storage-budget.md](local-storage/notes/storage-budget.md) covers data volumes and SD card selection.
+
+## Firmware
+
+### WindNerd Core (STM32G031F8) — ⚠️ WIP, untested
+
+Custom firmware replacing the factory WindNerd Core firmware. Drops power from ~0.6 mA (SLEEP mode) to ~0.04 mA (STOP mode) by sleeping until the ESP32-C6 triggers a read via GPIO interrupt. Uses the TMAG5273 driver directly from the WindNerd Core library — the `WN_Core` class is not used.
+
+- **Status:** Written, compiles clean (62% flash, 25% RAM), not yet tested on hardware
+- **Build:** `./build.sh` (Docker, no host tooling needed) → `build/src.ino.bin`
+- **Flash:** `./flash.sh` (ST-Link V2, openocd in Docker) or `./flash.sh --ci` (download from GitHub releases)
+- **CI/CD:** Auto-builds on push to main, publishes env image to GHCR + GitHub release with firmware binaries
+- **Details:** [windnerd-stm32g031f8/README.md](local-storage/firmware/windnerd-stm32g031f8/README.md)
+
+### ESP32-C6 — not started
+
+ESP32-C6 firmware (LP core sampling + main core logging + WiFi retrieval + OLED UI) will be added when development begins.
 
 ## Key design decisions
 
@@ -64,4 +90,4 @@ Start with [hardware-design.md](local-storage/notes/hardware-design.md) for the 
 
 ## License
 
-See [LICENSE](LICENSE).
+`AGPL-3.0-or-later`. See [LICENSE](LICENSE).
