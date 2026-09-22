@@ -1,0 +1,80 @@
+name: Build ESP32-C6 SuperMini firmware
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'local-storage/firmware/esp32c6-supermini/**'
+  pull_request:
+    paths:
+      - 'local-storage/firmware/esp32c6-supermini/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Compile ESP32-C6 SuperMini firmware
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Build env Docker image
+        run: |
+          docker build \
+            -t ghcr.io/thehonker/weathernerd-esp32c6-supermini-env:latest \
+            -t ghcr.io/thehonker/weathernerd-esp32c6-supermini-env:${{ github.sha }} \
+            local-storage/firmware/esp32c6-supermini/build-env
+
+      - name: Push env image to GHCR
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker push ghcr.io/thehonker/weathernerd-esp32c6-supermini-env:latest
+          docker push ghcr.io/thehonker/weathnerd-esp32c6-supermini-env:${{ github.sha }}
+
+      - name: Compile firmware
+        run: |
+          docker run --rm \
+            -v "$(pwd)/local-storage/firmware/esp32c6-supermini:/firmware" \
+            ghcr.io/thehonker/weathernerd-esp32c6-supermini-env:${{ github.sha }} \
+            /usr/local/bin/compile.sh
+
+      - name: Upload firmware artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: esp32c6-supermini-firmware
+          path: |
+            local-storage/firmware/esp32c6-supermini/build/src.ino.bin
+            local-storage/firmware/esp32c6-supermini/build/src.ino.elf
+            local-storage/firmware/esp32c6-supermini/build/src.ino.partitions.bin
+            local-storage/firmware/esp32c6-supermini/build/src.ino.bootloader.bin
+          retention-days: 90
+
+      - name: Create release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: esp32c6-supermini-${{ github.sha }}
+          name: ESP32-C6 SuperMini firmware (${{ github.sha }})
+          body: |
+            Firmware build from commit ${{ github.sha }}
+
+            ## Files
+            - `src.ino.bin` — flashable binary, write to ESP32-C6 at 0x10000
+            - `src.ino.bootloader.bin` — bootloader, write at 0x0
+            - `src.ino.partitions.bin` — partition table, write at 0x8000
+            - `src.ino.elf` — debug symbols
+
+            ## Flash
+            ```bash
+            weathernerd/local-storage/firmware/esp32c6-supermini/flash.sh --ci ${{ github.sha }}
+            ```
+          files: |
+            local-storage/firmware/esp32c6-supermini/build/src.ino.bin
+            local-storage/firmware/esp32c6-supermini/build/src.ino.elf
+            local-storage/firmware/esp32c6-supermini/build/src.ino.partitions.bin
+            local-storage/firmware/esp32c6-supermini/build/src.ino.bootloader.bin
