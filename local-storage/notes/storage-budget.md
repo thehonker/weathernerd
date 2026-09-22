@@ -14,7 +14,7 @@
 - **RTC:** DS3231 (TCXO, ±2 ppm, CR1220 backup) on shared I2C with BME280
 - **Storage:** MicroSD card (industrial, FAT32, two daily CSV files)
 - **Sample rate:** 5 seconds (wind + rain), 1 minute (temp/RH/pressure)
-- **Retrieval:** ESP32-C6 WiFi 6 soft-AP → connect phone/laptop → download CSV via WiFi switch
+- **Retrieval:** ESP32-C6 WiFi 6 soft-AP → connect phone/laptop → download CSV via CON button wake
 
 ---
 

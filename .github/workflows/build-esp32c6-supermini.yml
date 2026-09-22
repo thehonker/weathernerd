@@ -25,22 +25,25 @@ jobs:
       - name: Build env Docker image
         run: |
           docker build \
-            -t ghcr.io/thehonker/weathernerd-esp32c6-supermini-env:latest \
-            -t ghcr.io/thehonker/weathernerd-esp32c6-supermini-env:${{ github.sha }} \
+            -t ghcr.io/thehonker/weathnerd-esp32c6-supermini-env:latest \
+            -t ghcr.io/thehonker/weathnerd-esp32c6-supermini-env:${{ github.sha }} \
             local-storage/firmware/esp32c6-supermini/build-env
 
       - name: Push env image to GHCR
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-          docker push ghcr.io/thehonker/weathernerd-esp32c6-supermini-env:latest
+          docker push ghcr.io/thehonker/weathnerd-esp32c6-supermini-env:latest
           docker push ghcr.io/thehonker/weathnerd-esp32c6-supermini-env:${{ github.sha }}
 
       - name: Compile firmware
         run: |
           docker run --rm \
-            -v "$(pwd)/local-storage/firmware/esp32c6-supermini:/firmware" \
-            ghcr.io/thehonker/weathernerd-esp32c6-supermini-env:${{ github.sha }} \
+            -v "$(pwd)/local-storage/firmware/esp32c6-supermini:/project" \
+            -w /project \
+            -u $(id -u) \
+            -e HOME=/tmp \
+            ghcr.io/thehonker/weathnerd-esp32c6-supermini-env:${{ github.sha }} \
             /usr/local/bin/compile.sh
 
       - name: Upload firmware artifacts
@@ -48,11 +51,12 @@ jobs:
         with:
           name: esp32c6-supermini-firmware
           path: |
-            local-storage/firmware/esp32c6-supermini/build/src.ino.bin
-            local-storage/firmware/esp32c6-supermini/build/src.ino.elf
-            local-storage/firmware/esp32c6-supermini/build/src.ino.partitions.bin
-            local-storage/firmware/esp32c6-supermini/build/src.ino.bootloader.bin
+            local-storage/firmware/esp32c6-supermini/build/esp32c6_weathernerd.bin
+            local-storage/firmware/esp32c6-supermini/build/esp32c6_weathernerd.elf
+            local-storage/firmware/esp32c6-supermini/build/bootloader/bootloader.bin
+            local-storage/firmware/esp32c6-supermini/build/partition_table/partition-table.bin
           retention-days: 90
+          if-no-files-found: error
 
       - name: Create release
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -64,17 +68,17 @@ jobs:
             Firmware build from commit ${{ github.sha }}
 
             ## Files
-            - `src.ino.bin` — flashable binary, write to ESP32-C6 at 0x10000
-            - `src.ino.bootloader.bin` — bootloader, write at 0x0
-            - `src.ino.partitions.bin` — partition table, write at 0x8000
-            - `src.ino.elf` — debug symbols
+            - `esp32c6_weathernerd.bin` — main application binary
+            - `bootloader.bin` — ESP32-C6 bootloader
+            - `partition-table.bin` — partition table
+            - `esp32c6_weathernerd.elf` — debug symbols
 
             ## Flash
             ```bash
-            weathernerd/local-storage/firmware/esp32c6-supermini/flash.sh --ci ${{ github.sha }}
+            ./flash.sh --ci ${{ github.sha }}
             ```
           files: |
-            local-storage/firmware/esp32c6-supermini/build/src.ino.bin
-            local-storage/firmware/esp32c6-supermini/build/src.ino.elf
-            local-storage/firmware/esp32c6-supermini/build/src.ino.partitions.bin
-            local-storage/firmware/esp32c6-supermini/build/src.ino.bootloader.bin
+            local-storage/firmware/esp32c6-supermini/build/esp32c6_weathernerd.bin
+            local-storage/firmware/esp32c6-supermini/build/esp32c6_weathernerd.elf
+            local-storage/firmware/esp32c6-supermini/build/bootloader/bootloader.bin
+            local-storage/firmware/esp32c6-supermini/build/partition_table/partition-table.bin

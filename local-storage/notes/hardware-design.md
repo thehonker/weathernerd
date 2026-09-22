@@ -28,14 +28,16 @@ WindNerd ESP32  BME280 DS3231 SD card Piezo
   │      ├─ GPIO6/7 → I2C → BME280 (0x76) + DS3231 (0x68) + OLED (0x3C)
   │      ├─ GPIO2/3/18/19 → SPI → SD card
   │      ├─ GPIO14/20/21 ← EC11 rotary encoder
-  │      ├─ GPIO22 ← WiFi enable switch
-  │      ├─ GPIO22 → MOSFET gate → OLED VCC (power gate)
+  │      ├─ GPIO5  → MOSFET gate → OLED VCC (power gate, firmware-controlled)
+  │      ├─ GPIO14/20/21 ← rotary encoder (TRA/TRB/PSH)
+  │      ├─ GPIO22 ← CON button (wake interrupt + confirm)
+  │      ├─ GPIO23 ← BAK button (back + sleep)
   │      └─ WiFi 6 soft-AP → phone/laptop (data retrieval)
 ```
 
-**LP core** (5s loop): trigger WindNerd → read UART → read piezo ADC → buffer in RTC memory
-**Main core** (1 min wake): read BME280 + DS3231 → flush buffered data to SD → return to deep sleep
-**On demand** (WiFi switch): power on OLED → start WiFi AP → serve CSV files → return to sleep
+**LP core** (5s loop): trigger WindNerd → read UART → buffer in RTC memory
+**Main core** (1 min wake): read BME280 + DS3231 + rain ADC → flush buffered data to SD → return to deep sleep
+**On demand** (CON button press): wake main core → power on OLED via MOSFET → start WiFi AP → serve CSV files + clock sync → return to low-power mode on timeout or menu action
 
 ---
 
@@ -236,45 +238,48 @@ The ESP32-C6 SuperMini breaks out **22 GPIO** with silkscreen labels 0–9, 12�
 | 2 | GPIO2 | **SPI SCK (SD card)** | Main core | strapping | ADC1_CH2, LP_GPIO2, FSPIQ | SD card clock. SPI clock idles low — 10kΩ pull-down keeps boot-safe. |
 | 3 | GPIO3 | **SPI CS (SD card)** | Main core | safe | ADC1_CH3, LP_GPIO3 | SD card chip select (active low). 10kΩ pull-up keeps CS high during boot. |
 | 4 | GPIO4 | **UART RX from WindNerd** | LP core | strapping | ADC1_CH4, LP_GPIO4, LP_UART_RXD, MTMS | LP_UART RX. UART idles high — 10kΩ pull-up keeps boot-safe. |
-| 5 | GPIO5 | — FREE | — | strapping | ADC1_CH5, LP_GPIO5, LP_UART_TXD, MTDI | Available. Only free ADC pin (but strapping). |
+| 5 | GPIO5 | **OLED VCC MOSFET gate** | Main core | strapping | ADC1_CH5, LP_GPIO5, LP_UART_TXD, MTDI | P-channel MOSFET gate. 10kΩ pull-up = OFF during boot. LOW = OLED on. |
 | 6 | GPIO6 | **I2C SDA (BME280 + DS3231 + OLED)** | Main core | strapping | ADC1_CH6, LP_GPIO6, MTCK, FSPICLK | Shared I2C bus, three devices (0x76, 0x68, 0x3C) |
 | 7 | GPIO7 | **I2C SCL (BME280 + DS3231 + OLED)** | Main core | strapping | LP_GPIO7, MTDO, FSPID | Shared I2C bus |
 | 8 | GPIO8 | — FREE (onboard RGB LED) | — | strapping | WS2812 RGB LED | Keep OFF in firmware. Desolder if sleep current too high. |
 | 9 | GPIO9 | — FREE (onboard BOOT button) | — | strapping | BOOT button | Internal pull-up. Avoid external loads. |
 | 12 | GPIO12 | — RESERVED | — | USB | USB_D− | Native USB (programming). Do not use. |
 | 13 | GPIO13 | — RESERVED | — | USB | USB_D+ | Native USB (programming). Do not use. |
-| 14 | GPIO14 | **EC11 rotary encoder CLK** | Main core | safe | General purpose | Encoder clock (interrupt) |
+| 14 | GPIO14 | **Encoder TRA (A/CLK)** | Main core | safe | General purpose | Encoder clock (interrupt) |
 | 15 | GPIO15 | — FREE (onboard status LED) | — | strapping | JTAG, LED | Status LED. Keep OFF in firmware. Avoid as High-Z input. |
 | 16 (TX) | GPIO16 | — FREE | — | uart | UART0 TX, FSPICS0 | Free if using native USB (we are). Available for LTE modem or future use. |
 | 17 (RX) | GPIO17 | — FREE | — | uart | UART0 RX, FSPICS1 | Free if using native USB (we are). Available for LTE modem or future use. |
 | 18 | GPIO18 | **SPI MOSI (SD card)** | Main core | safe | SDIO CMD, FSPICS2 | SD card data out |
 | 19 | GPIO19 | **SPI MISO (SD card)** | Main core | safe | SDIO CLK, FSPICS3, I2C SCL (alt) | SD card data in |
-| 20 | GPIO20 | **EC11 rotary encoder DT** | Main core | safe | SDIO DATA0, FSPICS4, I2C SDA (alt) | Encoder data |
-| 21 | GPIO21 | **EC11 rotary encoder SW** | Main core | safe | SDIO DATA1, FSPICS5 | Encoder push button (input, pull-up) |
-| 22 | GPIO22 | **WiFi enable switch** | Main core | safe | SDIO DATA2 | Switch to GND = enable WiFi AP + display |
-| 23 | GPIO23 | — FREE | — | safe | SDIO DATA3 | Available for future expansion |
+| 20 | GPIO20 | **Encoder TRB (B/DT)** | Main core | safe | SDIO DATA0, FSPICS4, I2C SDA (alt) | Encoder data |
+| 21 | GPIO21 | **Encoder PSH (push)** | Main core | safe | SDIO DATA1, FSPICS5 | Encoder push button (input, pull-up) |
+| 22 | GPIO22 | **CON button (wake + confirm)** | Main core | safe | SDIO DATA2 | Momentary to GND, pull-up. Deep-sleep wakeup on falling edge. CONFIRM in UI. |
+| 23 | GPIO23 | **BAK button (back + sleep)** | Main core | safe | SDIO DATA3 | Momentary to GND, pull-up. BACK in UI. At top-level menu = enter low-power mode. |
 
 **Summary:**
 
 | Category | Count | Silkscreen pins |
 |---|---|---|
 | Used (LP core) | 3 | 0 (ADC), 1 (trigger), 4 (UART RX) |
-| Used (main core) | 10 | 2 (SCK), 3 (CS), 6 (SDA), 7 (SCL), 14 (ENC CLK), 18 (MOSI), 19 (MISO), 20 (ENC DT), 21 (ENC SW), 22 (WiFi switch) |
+| Used (main core) | 13 | 2 (SCK), 3 (CS), 5 (MOSFET), 6 (SDA), 7 (SCL), 14 (TRA), 18 (MOSI), 19 (MISO), 20 (TRB), 21 (PSH), 22 (CON), 23 (BAK) |
 | Reserved (USB) | 2 | 12, 13 |
-| **Free** | **7** | 5, 8, 9, 15, 16(TX), 17(RX), 23 |
+| **Free** | **5** | 8, 9, 15, 16(TX), 17(RX) |
 
-**7 free GPIO** for future expansion: LTE modem UART (16/17 TX/RX — perfect since we use native USB, or 23 + 5), battery voltage monitoring (5 ADC, but strapping), status LED (15 onboard).
+**5 free GPIO** for future expansion: LTE modem UART (16/17 TX/RX — perfect since we use native USB), battery voltage monitoring, status LED (15 onboard).
 
 ### Pin assignment rationale
 
 - **LP core pins (0–4):** The LP RISC-V core can only access LP_GPIO0–7. We use pin 0 for ADC (piezo), pin 1 for trigger output, and pin 4 for LP_UART RX. All three are LP-accessible.
 - **LP_UART on pin 4:** The ESP32-C6's LP_UART defaults to GPIO4 (RXD) and GPIO5 (TXD). We only need RX (WindNerd sends data, we don't send back). Pin 4 is a strapping pin (MTMS) but UART idles high, so a 10kΩ pull-up keeps it boot-safe.
 - **I2C on pins 6/7:** Shared I2C bus with three devices: BME280 (0x76), DS3231 (0x68), SH1106 OLED (0x3C). No address conflicts. These are the LP_I2C default pins but we use them with the main core's I2C peripheral.
-- **SPI on pins 2/3/18/19:** SPI is remapped via GPIO matrix. Pins 2/3 are on the left header, pins 18/19 on the right header. All avoid USB and are safe/low-conflict. Pins 10/11 do not exist on this board. Pins 18–23 are the ESP32-C6's native SDIO peripheral — 4-bit SDIO mode would use 6 pins (18–23) and consume GPIO20/21 (encoder DT/SW) and GPIO22 (WiFi switch). We deliberately choose SPI mode (4 pins) over SDIO mode (6 pins) because the data rate is trivial (~838 KB/day, 70-byte appends once per minute) and the 2 saved pins keep the encoder and WiFi switch on safe, non-strapping GPIO. SDIO's speed advantage is irrelevant when the SD card is asleep 55s out of every 60s.
+- **SPI on pins 2/3/18/19:** SPI is remapped via GPIO matrix. Pins 2/3 are on the left header, pins 18/19 on the right header. All avoid USB and are safe/low-conflict. Pins 10/11 do not exist on this board. Pins 18–23 are the ESP32-C6's native SDIO peripheral — 4-bit SDIO mode would use 6 pins (18–23) and consume GPIO20/21 (encoder TRB/PSH), GPIO22 (CON), and GPIO23 (BAK). We deliberately choose SPI mode (4 pins) over SDIO mode (6 pins) because the data rate is trivial (~838 KB/day, 70-byte appends once per minute) and the saved pins keep the encoder and buttons on safe, non-strapping GPIO. SDIO's speed advantage is irrelevant when the SD card is asleep 55s out of every 60s.
 - **ADC on pin 0:** ADC1_CH0, lowest-conflict ADC pin. LP core reads it at 5s intervals.
-- **OLED on shared I2C:** SH1106 1.3" OLED shares the pin 6/7 I2C bus. Address 0x3C — no conflict. Display is power-gated by MOSFET (only on when WiFi switch is engaged).
-- **Rotary encoder on pins 14/20/21:** EC11 encoder (CLK, DT, SW). All safe pins, non-strapping, non-USB. CLK on pin 14 for interrupt-driven rotation detection.
-- **WiFi enable switch on pin 22:** Physical switch to GND. When closed, triggers GPIO interrupt to wake main core, power on OLED via MOSFET, start WiFi AP. When opened, shuts everything down and returns to deep sleep.
+- **OLED on shared I2C:** SH1106 1.3" OLED shares the pin 6/7 I2C bus. Address 0x3C — no conflict. Display is power-gated by P-channel MOSFET (AO3401), gate on GPIO5 (firmware-controlled, not tied to a switch). 10kΩ pull-up on gate keeps MOSFET off during boot/deep sleep. Zero current when off.
+- **Rotary encoder on pins 14/20/21:** EC11 encoder (TRA/TRB/PSH). All safe pins, non-strapping, non-USB. TRA on pin 14 for interrupt-driven rotation detection.
+- **CON button on pin 22:** Momentary button to GND with pull-up. Serves dual purpose: (1) deep-sleep wakeup interrupt on falling edge, (2) CONFIRM button in interactive UI. Replaces the previous toggle switch design — simpler BOM, better UX (no need to remember to flip a switch back).
+- **BAK button on pin 23:** Momentary button to GND with pull-up. BACK button in interactive UI. At top-level menu, pressing BAK returns the station to low-power mode (power off OLED, stop WiFi, enter deep sleep).
+- **OLED MOSFET gate on pin 5:** GPIO5 drives the P-channel MOSFET gate for OLED power gating. HIGH = OLED off (pull-up ensures off during boot), LOW = OLED on. GPIO5 is strapping (MTDI) but 10kΩ pull-up = HIGH during boot = normal boot mode. Safe.
+- **Exit interactive mode:** 60s inactivity timeout (auto-sleep), or explicit "Sleep" menu option (navigate with encoder, confirm with CON), or press BAK at top-level menu. A separate "Halt" option (full system stop, requires power cycle) may be added in a future revision.
 - **Onboard LEDs:** Pin 8 (WS2812 RGB) and pin 15 (status LED) have onboard LEDs. Both are strapping pins and left free. Firmware must keep them OFF — the WS2812 draws ~1 mA even when showing black. Desolder the RGB LED if it causes sleep current issues.
 
 ### Deep sleep current note
@@ -318,33 +323,31 @@ Per [measurements on this exact board](https://dmelo.eu/blog/esp32c6_deepsleep/)
 | SCL | GPIO7 (I2C SCL) | Shared with BME280 + OLED |
 | CR1220+ | — | Backup battery on DS3231 module |
 
-### OLED Display (SH1106) ↔ ESP32-C6
+### OLED + Rotary Encoder + Buttons Board ↔ ESP32-C6
 
-| OLED pin | ESP32-C6 pin | Notes |
-|---|---|---|
-| VCC (3.3V) | 3.3V (LDO) | Power gated by WiFi switch — display only on when human present |
-| GND | GND | |
-| SDA | GPIO6 (I2C SDA) | Shared with BME280 + DS3231 (address 0x3C) |
-| SCL | GPIO7 (I2C SCL) | Shared with BME280 + DS3231 |
+The OLED+encoder board combines a 1.3" SH1106 OLED, EC11 rotary encoder, and two pushbuttons (CONFIRM and BACK) on a single breakout. Board pinout:
 
-### Rotary Encoder (EC11) ↔ ESP32-C6
+```
+CON  SDA  SCL  PSH  TRA  TRB  BAK  GND  VCC
+```
 
-| EC11 pin | ESP32-C6 pin | Board label | Notes |
-|---|---|---|---|
-| CLK | GPIO14 | 14 | Rotary encoder clock (interrupt) |
-| DT | GPIO20 | 20 | Rotary encoder data |
-| SW | GPIO21 | 21 | Push button (input, pull-up) |
-| VCC | 3.3V (LDO) | 3V3 | |
-| GND | GND | GND | |
+| Board pin | ESP32-C6 pin | Silkscreen | Function | Notes |
+|---|---|---|---|---|
+| CON | GPIO22 | 22 | CONFIRM button + wake interrupt | Momentary to GND, pull-up, deep-sleep wakeup on falling edge |
+| SDA | GPIO6 | 6 | I2C SDA | Shared with BME280 + DS3231 (OLED addr 0x3C) |
+| SCL | GPIO7 | 7 | I2C SCL | Shared with BME280 + DS3231 |
+| PSH | GPIO21 | 21 | Encoder push button | Momentary to GND, pull-up |
+| TRA | GPIO14 | 14 | Encoder A (clock) | Interrupt-driven rotation |
+| TRB | GPIO20 | 20 | Encoder B (data) | Direction detection |
+| BAK | GPIO23 | 23 | BACK button | Momentary to GND, pull-up. At top-level menu = enter low-power mode |
+| GND | GND | GND | Ground | |
+| VCC | 3.3V via MOSFET | 3V3 | OLED power | Gated by P-channel MOSFET, gate on GPIO5 |
 
-### WiFi Enable Switch ↔ ESP32-C6
+**OLED power gating:** OLED VCC is switched via a P-channel MOSFET (AO3401). Gate is controlled by GPIO5 (firmware-driven, not tied to a switch). 10kΩ pull-up on gate to 3.3V keeps MOSFET off during boot/deep sleep. Firmware sets GPIO5 LOW to power on OLED, HIGH to power off. Zero current when off.
 
-| Switch pin | ESP32-C6 pin | Board label | Notes |
-|---|---|---|---|
-| One side | GPIO22 | 22 | Input with internal pull-up |
-| Other side | GND | GND | Switch to GND = enable |
-
-**Note:** GPIO22 (board label "22") is configured as input with pull-up. When switch closes (to GND), it triggers a GPIO interrupt that wakes the main core from deep sleep. Main core then powers on the OLED via MOSFET, starts WiFi AP, and enters interactive mode. When switch opens, main core shuts down display + WiFi and returns to deep sleep.
+**Wake/sleep flow:**
+- **Wake:** Press CON → GPIO22 falling edge wakes main core from deep sleep → firmware powers on OLED (GPIO5 LOW) → starts WiFi AP → enters interactive mode
+- **Sleep:** 60s inactivity timeout, or navigate to "Sleep" menu item and press CON, or press BAK at top-level menu → firmware powers off OLED (GPIO5 HIGH) → stops WiFi → enters deep sleep
 
 ### Piezo Rain ↔ ESP32-C6
 
@@ -441,8 +444,7 @@ The Li-SOCl2 D-cell nominal voltage is 3.6V, fresh up to 3.67V. The 3.3V LDO dro
 | SD card | 8 GB industrial microSD | Transcend / Kingston / SanDisk | ~$10-15 |
 | Battery | 2× ER34615 Li-SOCl2 D-cell (3.6V, 38 Ah total) | Tadiran / Saft / Xeno | ~$20-30 |
 | Regulator | 3.3V LDO (HT7333 or similar) | Generic | ~$0.50 |
-| Display | 1.3" SH1106 OLED + EC11 rotary encoder | [Amazon](https://www.amazon.com/MELIFE-Display-Module-Rotary-Encoder/dp/B0GWPRZ283/) | ~$10 |
-| WiFi switch | SPST toggle switch | Generic | ~$1 |
+| Display + UI | 1.3" SH1106 OLED + EC11 encoder + CON/BAK buttons | [Amazon](https://www.amazon.com/MELIFE-Display-Module-Rotary-Encoder/dp/B0GWPRZ283/) | ~$10 |
 | Enclosure | IP65+ weatherproof box | Various | ~$5-10 |
 | Misc | Wire, headers, resistors, pull-ups | — | ~$2-3 |
 | **Total** | | | **~$99-143** |
@@ -451,8 +453,8 @@ The Li-SOCl2 D-cell nominal voltage is 3.6V, fresh up to 3.67V. The 3.3V LDO dro
 
 | Component | Value / Part | Qty | Purpose | Est. cost |
 |---|---|---|---|---|
-| P-channel MOSFET | AO3401 (SOT-23) or similar | 1 | OLED power gating — gates display VCC, controlled by WiFi switch line | $0.10 |
-| 10kΩ resistor | 10kΩ 0805 or through-hole | 4 | UART RX pull-up (GPIO4), trigger line pull-up (GPIO1), EC11 SW pull-up (GPIO21), WiFi switch pull-up (GPIO22) | $0.04 |
+| P-channel MOSFET | AO3401 (SOT-23) or similar | 1 | OLED power gating — gates display VCC, controlled by GPIO5 (firmware) | $0.10 |
+| 10kΩ resistor | 10kΩ 0805 or through-hole | 6 | UART RX pull-up (GPIO4), trigger line pull-up (GPIO1), MOSFET gate pull-up (GPIO5), encoder PSH pull-up (GPIO21), CON pull-up (GPIO22), BAK pull-up (GPIO23) | $0.06 |
 | 10MΩ resistor | 10MΩ 0805 | 2 | Piezo bias divider (VCC/2) | $0.02 |
 | Schottky diode | BAT54S (SOT-23) | 1 | Piezo ADC clamp (protect GPIO0 from voltage spikes) | $0.05 |
 | 100nF capacitor | 100nF 0805 or ceramic disc | 1 | Piezo ADC noise filter | $0.02 |
@@ -461,7 +463,7 @@ The Li-SOCl2 D-cell nominal voltage is 3.6V, fresh up to 3.67V. The 3.3V LDO dro
 | CR1220 coin cell | CR1220 (primary, non-rechargeable) | 1 | DS3231 RTC backup battery | $0.50 |
 | **Subtotal** | | | | **~$0.81** |
 
-**Note on MOSFET:** The AO3401 is a common P-channel MOSFET in SOT-23. Source to 3.3V LDO output, drain to OLED VCC, gate to GPIO22 (board label "22", WiFi switch line). When GPIO22 is high (switch open, sleep mode), MOSFET is off — OLED unpowered. When GPIO22 goes low (switch closed), MOSFET turns on — OLED powered. Add a 10kΩ pull-up on the gate to 3.3V to ensure MOSFET stays off during boot/reset. The OLED's I2C lines (SDA/SCL) can stay connected even when VCC is off — the ESP32-C6 I2C pins have internal ESD diodes that won't backfeed significantly at 3.3V.
+**Note on MOSFET:** The AO3401 is a common P-channel MOSFET in SOT-23. Source to 3.3V LDO output, drain to OLED VCC, gate to GPIO5. Firmware controls the gate: HIGH = MOSFET off (OLED unpowered), LOW = MOSFET on (OLED powered). A 10kΩ pull-up on the gate to 3.3V ensures MOSFET stays off during boot/deep sleep. The OLED's I2C lines (SDA/SCL) can stay connected even when VCC is off — the ESP32-C6 I2C pins have internal ESD diodes that won't backfeed significantly at 3.3V.
 
 ---
 
@@ -491,8 +493,8 @@ The Li-SOCl2 D-cell nominal voltage is 3.6V, fresh up to 3.67V. The 3.3V LDO dro
 3. **Radiation shield** — 3D-printed Stevenson screen for BME280, or mount sensor in vented enclosure?
 4. **Anemometer mounting** — pole mount height, cable length to enclosure, bearing maintenance interval.
 5. **Cold weather** — condensation inside enclosure (desiccant pack?), icing on anemometer (heated variant?), battery insulation.
-6. **7 free GPIO** — future expansion: LTE modem UART (16/17 TX/RX are perfect since we use native USB, or 23 + 5), battery voltage monitoring (5 ADC, but strapping), status LED (15 onboard).
-7. **OLED power gating** — display VCC switched via P-channel MOSFET (AO3401), gate controlled by GPIO22 (WiFi switch line). 10kΩ pull-up on gate keeps MOSFET off during boot. Zero current when switch is open.
+6. **5 free GPIO** — future expansion: LTE modem UART (16/17 TX/RX are perfect since we use native USB), battery voltage monitoring, status LED (15 onboard).
+7. **OLED power gating** — display VCC switched via P-channel MOSFET (AO3401), gate controlled by GPIO5 (firmware-driven). 10kΩ pull-up on gate keeps MOSFET off during boot/deep sleep. Zero current when off. Firmware sets GPIO5 LOW to power on OLED after wake, HIGH before returning to sleep.
 8. **Onboard LEDs** — GPIO8 (WS2812 RGB) and GPIO15 (status LED) must be kept OFF in firmware. WS2812 draws ~1 mA even showing black. Desolder if sleep current is too high.
 9. **Deep sleep current** — board measurements show tens of µA, higher than datasheet. LTH7R charger IC adds overhead. Measure actual current and update power budget.
 

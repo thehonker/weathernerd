@@ -14,8 +14,8 @@
 - **RTC:** DS3231 (TCXO, ±2 ppm, CR1220 backup) on shared I2C with BME280
 - **Storage:** MicroSD card (industrial, FAT32, daily CSV files — two streams: wind/rain at 5s, temp/RH/pressure at 1 min)
 - **Sample rate:** 5 seconds (wind + rain), 1 minute (temp/RH/pressure)
-- **Data retrieval:** ESP32 WiFi soft-AP → connect phone/laptop → download CSVs via WiFi switch
-- **Display + UI:** SH1106 1.3" OLED + EC11 rotary encoder on shared I2C + GPIO. Power-gated via MOSFET — zero current in sleep. Only active when WiFi switch is engaged.
+- **Data retrieval:** ESP32 WiFi soft-AP → connect phone/laptop → download CSVs via CON button wake
+- **Display + UI:** SH1106 1.3" OLED + EC11 rotary encoder + CON/BAK buttons on shared I2C + GPIO. Power-gated via MOSFET (GPIO5) — zero current in sleep. Only active when CON button wakes the main core.
 - **No chip swaps.** STM32G031F8 stays as-is with custom firmware. ESP32-C6 handles everything beyond wind.
 
 ### Board: ESP32-C6 SuperMini
@@ -40,9 +40,9 @@ Selected from available boards (ESP32-C3 SuperMini, ESP32-C6 SuperMini, Xiao ESP
 | ESP32 avg current | ~0.155 mA | ~0.4–0.5 mA |
 | Total system avg | ~0.24 mA | ~0.5–0.6 mA |
 
-WiFi 6 also gives better range for the spring data-retrieval workflow — flip the WiFi switch, connect, download CSVs.
+WiFi 6 also gives better range for the spring data-retrieval workflow — press CON button, connect, download CSVs.
 
-### GPIO allocation (13 pins used, 22 available, 7 free)
+### GPIO allocation (16 pins used, 22 available, 5 free)
 
 | Function | Pins | Silkscreen |
 |---|---|---|
@@ -51,11 +51,13 @@ WiFi 6 also gives better range for the spring data-retrieval workflow — flip t
 | UART RX from WindNerd | 1 | 4 |
 | I2C (BME280 + DS3231 + OLED: SDA + SCL) | 2 | 6, 7 |
 | SPI (SD card: MOSI + MISO + SCK + CS) | 4 | 2, 3, 18, 19 |
-| EC11 rotary encoder (CLK + DT + SW) | 3 | 14, 20, 21 |
-| WiFi enable switch | 1 | 22 |
+| EC11 rotary encoder (TRA + TRB + PSH) | 3 | 14, 20, 21 |
+| CON button (wake + confirm) | 1 | 22 |
+| BAK button (back + sleep) | 1 | 23 |
+| OLED VCC MOSFET gate | 1 | 5 |
 | **Total** | **13** | |
 
-7 free: 5, 8, 9, 15, 16(TX), 17(RX), 23. DS3231 shares I2C with BME280 + OLED (addresses 0x68, 0x76, 0x3C — no conflict).
+5 free: 8, 9, 15, 16(TX), 17(RX). DS3231 shares I2C with BME280 + OLED (addresses 0x68, 0x76, 0x3C — no conflict).
 
 ---
 
@@ -150,7 +152,7 @@ Note: the C6's deep sleep current (~7 µA) is significantly lower than older ESP
 | Regulator/quiescent (LDO) | ~0.001 mA | ~0.001 mA | HT7333 quiescent |
 | **Total estimated** | **~0.10 mA** | **~0.10 mA** | |
 
-OLED, encoder, and WiFi switch draw zero current in sleep (OLED power-gated via MOSFET, encoder/switch are passive inputs with pull-ups that only wake the main core on interrupt).
+OLED, encoder, and buttons draw zero current in sleep (OLED power-gated via MOSFET on GPIO5, encoder/buttons are passive inputs with pull-ups that only wake the main core on interrupt).
 
 ### Comparison: factory vs custom WindNerd firmware
 
@@ -265,7 +267,7 @@ At 5.5–11.5 mA, a Li-SOCl2 D-cell lasts 69–145 days. Need solar or bigger ba
 
 1. **Clone WindNerd Core repo** — study library source, understand STOP mode + GPIO interrupt hooks
 2. **Write WindNerd custom firmware** — STOP mode sleep, GPIO wake, UART output on demand
-3. **Wire up ESP32-C6 SuperMini** — GPIO trigger to WindNerd, UART RX from WindNerd TX2, BME280 + DS3231 + OLED on shared I2C, piezo on ADC, SD card on SPI, EC11 encoder, WiFi switch (13 pins, 22 available, 7 free)
+3. **Wire up ESP32-C6 SuperMini** — GPIO trigger to WindNerd, UART RX from WindNerd TX2, BME280 + DS3231 + OLED on shared I2C, piezo on ADC, SD card on SPI, EC11 encoder + CON/BAK buttons, OLED MOSFET gate (16 pins, 22 available, 5 free)
 4. **Write ESP32-C6 firmware** — LP core triggers WindNerd every 5s + reads UART + ADC, main core reads BME280/DS3231 + flushes SD every 1 min, WiFi 6 soft-AP for data retrieval
 5. **Measure actual sleep currents** — both boards. SuperMini dev board overhead (LEDs, LDOs) will inflate numbers. Desolder LEDs.
 6. **Select piezo rain sensor** — specific module with analog output

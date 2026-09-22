@@ -4,7 +4,7 @@ set -euo pipefail
 # Flash firmware to ESP32-C6 SuperMini via USB serial.
 #
 # Usage:
-#   ./flash.sh              Flash locally built build/src.ino.bin
+#   ./flash.sh              Flash locally built firmware
 #   ./flash.sh --ci         Download latest release and flash that
 #   ./flash.sh --ci <sha>   Download release for a specific commit sha
 #
@@ -13,10 +13,10 @@ set -euo pipefail
 # Requires: ESP32-C6 SuperMini connected via USB
 
 FIRMWARE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-IMAGE_NAME="${ESP32C6_BUILD_IMAGE:-ghcr.io/thehonker/weathernerd-esp32c6-supermini-env:latest}"
+IMAGE_NAME="${ESP32C6_BUILD_IMAGE:-ghcr.io/thehonker/weathnerd-esp32c6-supermini-env:latest}"
 REPO="thehonker/weathernerd"
 RELEASE_PREFIX="esp32c6-supermini"
-BIN_PATH="$FIRMWARE_DIR/build/src.ino.bin"
+BIN_PATH="$FIRMWARE_DIR/build/esp32c6_weathernerd.bin"
 
 # --- Parse args ---
 MODE="local"
@@ -43,7 +43,6 @@ if [ "$MODE" = "ci" ]; then
   if [ -n "$COMMIT_SHA" ]; then
     TAG="$RELEASE_PREFIX-$COMMIT_SHA"
   else
-    # Resolve latest release tag via API (no auth needed for public repo)
     TAG=$(curl -fsSL "https://api.github.com/repos/$REPO/releases/latest" \
       | grep -oP '"tag_name":\s*"\K[^"]*' \
       | grep "^$RELEASE_PREFIX" \
@@ -56,11 +55,11 @@ if [ "$MODE" = "ci" ]; then
 
   DOWNLOAD_URL="https://github.com/$REPO/releases/download/$TAG"
   echo "Downloading $TAG..."
-  curl -fsSL -o "$FIRMWARE_DIR/build/src.ino.bin" "$DOWNLOAD_URL/src.ino.bin"
-  curl -fsSL -o "$FIRMWARE_DIR/build/src.ino.elf" "$DOWNLOAD_URL/src.ino.elf"
-  curl -fsSL -o "$FIRMWARE_DIR/build/src.ino.partitions.bin" "$DOWNLOAD_URL/src.ino.partitions.bin"
-  curl -fsSL -o "$FIRMWARE_DIR/build/src.ino.bootloader.bin" "$DOWNLOAD_URL/src.ino.bootloader.bin"
-  BIN_PATH="$FIRMWARE_DIR/build/src.ino.bin"
+  curl -fsSL -o "$FIRMWARE_DIR/build/esp32c6_weathernerd.bin" "$DOWNLOAD_URL/esp32c6_weathernerd.bin"
+  curl -fsSL -o "$FIRMWARE_DIR/build/esp32c6_weathernerd.elf" "$DOWNLOAD_URL/esp32c6_weathernerd.elf"
+  curl -fsSL -o "$FIRMWARE_DIR/build/bootloader.bin" "$DOWNLOAD_URL/bootloader.bin"
+  curl -fsSL -o "$FIRMWARE_DIR/build/partition-table.bin" "$DOWNLOAD_URL/partition-table.bin"
+  BIN_PATH="$FIRMWARE_DIR/build/esp32c6_weathernerd.bin"
 fi
 
 # --- Verify binary exists ---
@@ -76,12 +75,11 @@ fi
 echo "=== Pulling build image: $IMAGE_NAME ==="
 docker pull "$IMAGE_NAME"
 
-# Pass through the serial port if set, let container auto-detect otherwise
-DOCKER_ARGS=(--rm --device /dev/bus/usb -v "$FIRMWARE_DIR:/firmware")
+DOCKER_ARGS=(--rm -v "$FIRMWARE_DIR:/project" -w /project -u "$(id -u)" -e HOME=/tmp)
 if [ -n "${ESP32_PORT:-}" ]; then
-  DOCKER_ARGS+=(-e "ESP32_PORT=$ESP32_PORT")
-  # Also mount the specific serial device
-  DOCKER_ARGS+=(--device "$ESP32_PORT")
+  DOCKER_ARGS+=(-e "ESP32_PORT=$ESP32_PORT" --device "$ESP32_PORT")
+else
+  DOCKER_ARGS+=(--device /dev/bus/usb)
 fi
 
 echo "=== Flashing $BIN_PATH via USB serial ==="
