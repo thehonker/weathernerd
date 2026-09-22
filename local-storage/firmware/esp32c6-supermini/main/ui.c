@@ -364,16 +364,28 @@ esp_err_t ui_run(i2c_master_dev_handle_t oled_dev,
                 }
                 break;
             case MENU_SLEEP:
-                render_status(oled_dev, "Entering", "low-power mode");
-                vTaskDelay(pdMS_TO_TICKS(1000));
-                running = false;
-                result = ESP_OK;
+                render_status(oled_dev, "Sleep?", "CON=yes BAK=no");
+                {
+                    input_event_t slp_ev = input_wait_event(10000);
+                    if (slp_ev == INPUT_CON_PRESS || slp_ev == INPUT_PSH_PRESS) {
+                        render_status(oled_dev, "Entering", "low-power mode");
+                        vTaskDelay(pdMS_TO_TICKS(1000));
+                        running = false;
+                        result = ESP_OK;
+                    }
+                }
                 break;
             case MENU_HALT:
-                render_status(oled_dev, "System halt.", "Power cycle");
-                vTaskDelay(pdMS_TO_TICKS(2000));
-                running = false;
-                result = ESP_ERR_INVALID_STATE;
+                render_status(oled_dev, "Halt?", "CON=yes BAK=no");
+                {
+                    input_event_t hlt_ev = input_wait_event(10000);
+                    if (hlt_ev == INPUT_CON_PRESS || hlt_ev == INPUT_PSH_PRESS) {
+                        render_status(oled_dev, "System halt.", "Power cycle");
+                        vTaskDelay(pdMS_TO_TICKS(2000));
+                        running = false;
+                        result = ESP_ERR_INVALID_STATE;
+                    }
+                }
                 break;
             }
             if (running) {

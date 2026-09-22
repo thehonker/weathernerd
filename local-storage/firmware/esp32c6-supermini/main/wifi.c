@@ -33,7 +33,7 @@ static const char *TAG = "wifi";
 
 /* WiFi AP config */
 #define WIFI_SSID       "WeatherNerd"
-#define WIFI_PASS       ""          /* Open network — easiest for field retrieval */
+#define WIFI_PASS       "WeatherNerd"
 #define WIFI_CHANNEL    1
 #define WIFI_MAX_CONN   4
 
