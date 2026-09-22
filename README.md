@@ -2,7 +2,7 @@
 
 [![WindNerd STM32G031F8 firmware](https://github.com/thehonker/weathernerd/actions/workflows/build-windnerd-stm32g031f8.yml/badge.svg)](https://github.com/thehonker/weathernerd/actions/workflows/build-windnerd-stm32g031f8.yml)
 
-Low-power, long-duration weather stations built around the [WindNerd Core](https://windnerd.net) anemometer and ESP32-C6 dataloggers.
+Low-power, long-duration weather stations built around the [WindNerd Core](https://github.com/windnerd-labs/Windnerd-Core) anemometer and ESP32-C6 dataloggers.
 
 ## What is this?
 
