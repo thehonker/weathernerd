@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "weathernerd")(type "KiCad")(uri "${KIPRJMOD}/libs/weathernerd.pretty")(options "")(descr "WeatherNerd custom footprints"))
+)

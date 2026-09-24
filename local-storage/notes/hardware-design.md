@@ -561,12 +561,12 @@ The Li-SOCl2 D-cell nominal voltage is 3.6V, fresh up to 3.67V. The 3.3V LDO dro
 | P-channel MOSFET | AO3401 (SOT-23) or similar | 1 | OLED power gating — gates display VCC, controlled by GPIO5 (firmware) | $0.10 |
 | 10kΩ resistor | 10kΩ 0805 or through-hole | 6 | UART RX pull-up (GPIO4), trigger line pull-up (GPIO1), MOSFET gate pull-up (GPIO5), encoder PSH pull-up (GPIO21), CON pull-up (GPIO22), BAK pull-up (GPIO23) | $0.06 |
 | 1N4148 diode | 1N4148 (DO-35 or SOD-323) | 2 | Peak-hold voltage doubler (D1 charge pump, D2 peak detector) | $0.02 |
-| 1nF capacitor | 1nF 0805 ceramic | 1 | Charge pump cap (C1) | $0.01 |
+| 1nF capacitor | 1nF 0805 ceramic (code 102) | 1 | Charge pump cap (C1) | $0.01 |
 | 470nF capacitor | 470nF film (low leakage) | 1 | Peak-hold cap (C2) — film dielectric for long hold time | $0.10 |
 | 2N7002 MOSFET | 2N7002 (SOT-23) | 1 | Peak-hold cap reset (GPIO8 gate, discharges C2 after ADC read) | $0.03 |
 | 10kΩ resistor | 10kΩ 0805 | 1 | Rain ADC series protection (R1) + 1 more for MOSFET gate pulldown (R2) — use 2 from the 10kΩ qty above | $0.01 |
 | 10nF capacitor | 10nF 0805 | 1 | Peak detector cap (v2 op-amp circuit, if used) | $0.02 |
-| 1µF capacitor | 1µF 0805 ceramic | 2 | LDO input + output bypass (one each) | $0.06 |
+| 1µF capacitor | 1µF 0805 ceramic (code 105) | 2 | LDO input + output bypass (one each) | $0.06 |
 | CR1220 coin cell | CR1220 (primary, non-rechargeable) | 1 | DS3231 RTC backup battery | $0.50 |
 | **Subtotal** | | | | **~$0.81** |
 
