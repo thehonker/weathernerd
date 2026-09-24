@@ -1,0 +1,88 @@
+(footprint "WindNerd-Conn"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "WindNerd anemometer board connector, 4-pin 2.54mm pitch")
+	(tags "WindNerd anemometer connector header")
+
+	(property "Reference" "J"
+		(at 0 -9.5 0)
+		(layer "F.SilkS")
+		(uuid "b6a95438-c251-4a9f-b5ef-4ddfb274831a")
+		(effects (font (size 1.27 1.27) (thickness 0.15)))
+	)
+	(property "Value" "WindNerd-Conn"
+		(at 0 9.5 0)
+		(layer "F.Fab")
+		(uuid "aacddda5-f009-405f-b147-47b6718dc258")
+		(effects (font (size 1.27 1.27) (thickness 0.15)))
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "6afcae0e-41b0-43e9-9662-3e5e5da84b96")
+		(effects (font (size 1.27 1.27) (thickness 0.15)))
+	)
+	(property "Description" "WindNerd anemometer board connector, 4-pin 2.54mm pitch"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "413bd86b-aefd-49db-8382-a0ba921d3722")
+		(effects (font (size 1.27 1.27) (thickness 0.15)))
+	)
+
+	(attr through_hole)
+
+	# Fab layer
+	(fp_line (start -8 -7.5) (end 8 -7.5) (stroke (width 0.1) (type solid)) (layer "F.Fab") (uuid "66018298-12b0-4b79-b732-979535898048"))
+	(fp_line (start 8 -7.5) (end 8 7.5) (stroke (width 0.1) (type solid)) (layer "F.Fab") (uuid "81779883-da6e-43b0-bc5e-c7686916d6ab"))
+	(fp_line (start 8 7.5) (end -8 7.5) (stroke (width 0.1) (type solid)) (layer "F.Fab") (uuid "ec65d7d1-04c2-4f76-b15d-1f43f5fba0cc"))
+	(fp_line (start -8 7.5) (end -8 -7.5) (stroke (width 0.1) (type solid)) (layer "F.Fab") (uuid "901beb66-c74b-4ff3-9813-5e08229bd186"))
+
+	(fp_line (start -8.12 -7.62) (end 8.12 -7.62) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (uuid "063689f1-5fca-412e-bd36-9ac9d685eb39"))
+	(fp_line (start 8.12 -7.62) (end 8.12 7.62) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (uuid "3d827224-1658-4283-8fcb-a49264b267e9"))
+	(fp_line (start 8.12 7.62) (end -8.12 7.62) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (uuid "a9b6e260-06cc-4504-bbec-9ca0d185f9fd"))
+	(fp_line (start -8.12 7.62) (end -8.12 -7.62) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (uuid "5b7c0970-882a-4487-8cd8-6b2d73366d53"))
+	(fp_circle (center -5.31 -4.96) (end -5.01 -4.96) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (fill solid) (uuid "c8706d46-c521-45b8-9a51-c7f79b64810f"))
+
+	(fp_line (start -8.5 -8) (end 8.5 -8) (stroke (width 0.05) (type solid)) (layer "F.CrtYd") (uuid "31562223-0a05-40d9-854f-e56040036f5b"))
+	(fp_line (start 8.5 -8) (end 8.5 8) (stroke (width 0.05) (type solid)) (layer "F.CrtYd") (uuid "ce10d8aa-e353-47fa-bf49-01bcb74c7fbd"))
+	(fp_line (start 8.5 8) (end -8.5 8) (stroke (width 0.05) (type solid)) (layer "F.CrtYd") (uuid "a6cf62e1-0204-43e4-b1a3-67da59872903"))
+	(fp_line (start -8.5 8) (end -8.5 -8) (stroke (width 0.05) (type solid)) (layer "F.CrtYd") (uuid "e91d4096-6099-437d-898a-247ec9f212d0"))
+
+	(fp_text user "${REFERENCE}" (at 0 0 0) (layer "F.Fab") (uuid "99f6f250-cc4f-4bf8-944f-4de016dd290d")
+		(effects (font (size 1.27 1.27) (thickness 0.15)))
+	)
+
+	(pad "VCC" thru_hole roundrect
+		(at -3.81 -4.96)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(roundrect_rratio 0.147059)
+		(uuid "c7364c26-a996-46dd-aff0-20a30d1ef9e5")
+	)
+	(pad "GND" thru_hole oval
+		(at -1.27 -4.96)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "b4fabb3d-c0a4-437e-b518-8176ac7d7b5f")
+	)
+	(pad "TRG" thru_hole oval
+		(at 1.27 -4.96)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "a1b5ab07-88cc-4877-a63d-dbd8b033bfc2")
+	)
+	(pad "RX" thru_hole oval
+		(at 3.81 -4.96)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "d63c46ef-a5bf-4e6b-aadb-b9b3d64ba847")
+	)
+
+	(embedded_fonts no)
+)

@@ -1,0 +1,104 @@
+(footprint "MicroSD-SPI"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "MicroSD card SPI breakout module, 6-pin 2.54mm pitch, 3.3V")
+	(tags "microSD SD card SPI breakout")
+
+	(property "Reference" "U"
+		(at 0 -9.5 0)
+		(layer "F.SilkS")
+		(uuid "2534f291-da8b-458a-9bb3-e1253754083a")
+		(effects (font (size 1.27 1.27) (thickness 0.15)))
+	)
+	(property "Value" "MicroSD-SPI"
+		(at 0 9.5 0)
+		(layer "F.Fab")
+		(uuid "8668988b-6055-4e07-8066-94da7367824d")
+		(effects (font (size 1.27 1.27) (thickness 0.15)))
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "a58ca508-2a14-4876-8d95-ba186127b34d")
+		(effects (font (size 1.27 1.27) (thickness 0.15)))
+	)
+	(property "Description" "MicroSD card SPI breakout module, 6-pin, 3.3V"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "db0d5873-3675-4a5c-ac47-9990cd30ca12")
+		(effects (font (size 1.27 1.27) (thickness 0.15)))
+	)
+
+	(attr through_hole)
+
+	# Fab layer
+	(fp_line (start -11 -7.5) (end 11 -7.5) (stroke (width 0.1) (type solid)) (layer "F.Fab") (uuid "ff2a9358-8ccc-45d9-ba4a-93eb2e2972ff"))
+	(fp_line (start 11 -7.5) (end 11 7.5) (stroke (width 0.1) (type solid)) (layer "F.Fab") (uuid "9be28887-0c7e-454d-9369-85d2e4d60bb0"))
+	(fp_line (start 11 7.5) (end -11 7.5) (stroke (width 0.1) (type solid)) (layer "F.Fab") (uuid "0c2ca95b-8525-4276-818c-f9083eee01c7"))
+	(fp_line (start -11 7.5) (end -11 -7.5) (stroke (width 0.1) (type solid)) (layer "F.Fab") (uuid "c6387527-6eb8-473f-9e96-b4600a7ec3e0"))
+
+	# SilkS layer
+	(fp_line (start -11.12 -7.62) (end 11.12 -7.62) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (uuid "b621bb49-3514-4c16-a6d7-b5858ec4beff"))
+	(fp_line (start 11.12 -7.62) (end 11.12 7.62) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (uuid "1d7ca1bd-9319-4143-8966-d70ca4cecf58"))
+	(fp_line (start 11.12 7.62) (end -11.12 7.62) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (uuid "559ab4c6-deff-4f10-998a-b69cd5c9c4e0"))
+	(fp_line (start -11.12 7.62) (end -11.12 -7.62) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (uuid "d5fafba4-9979-4cdf-8c66-7da7a34b0a62"))
+	(fp_circle (center -7.85 -4.96) (end -7.55 -4.96) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (fill solid) (uuid "5e8fc255-eceb-4658-9b13-61b7c2b4250f"))
+
+	# Courtyard
+	(fp_line (start -11.5 -8) (end 11.5 -8) (stroke (width 0.05) (type solid)) (layer "F.CrtYd") (uuid "0e0a1389-9686-4490-89f6-d959b3d0939a"))
+	(fp_line (start 11.5 -8) (end 11.5 8) (stroke (width 0.05) (type solid)) (layer "F.CrtYd") (uuid "6b5e3db6-4666-4fb4-b7c6-e47497819438"))
+	(fp_line (start 11.5 8) (end -11.5 8) (stroke (width 0.05) (type solid)) (layer "F.CrtYd") (uuid "652e3edf-e991-4160-970d-331789b38c06"))
+	(fp_line (start -11.5 8) (end -11.5 -8) (stroke (width 0.05) (type solid)) (layer "F.CrtYd") (uuid "f43bd298-d08f-402a-be1c-2f181658078a"))
+
+	(fp_text user "${REFERENCE}" (at 0 0 0) (layer "F.Fab") (uuid "a59898a9-77d2-4495-89f5-01184b3926da")
+		(effects (font (size 1.27 1.27) (thickness 0.15)))
+	)
+
+	(pad "3V3" thru_hole roundrect
+		(at -6.35 -4.96)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(roundrect_rratio 0.147059)
+		(uuid "b4af32ae-a84e-48b5-9fa1-b282e81a7f28")
+	)
+	(pad "CS" thru_hole oval
+		(at -3.81 -4.96)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "26d509cf-41b2-4b2b-b5cb-7ca26c0c774b")
+	)
+	(pad "MOSI" thru_hole oval
+		(at -1.27 -4.96)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "3fe0fa69-5881-40d8-92a4-68e73c963325")
+	)
+	(pad "CLK" thru_hole oval
+		(at 1.27 -4.96)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "e0950e6f-374e-4820-89f3-54d0c68dcd20")
+	)
+	(pad "MISO" thru_hole oval
+		(at 3.81 -4.96)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "28da4e17-19ed-4d9c-a72a-0be157f5c583")
+	)
+	(pad "GND" thru_hole oval
+		(at 6.35 -4.96)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "8bd983d2-1f8b-406a-9363-a93e27b8ecbd")
+	)
+
+	(embedded_fonts no)
+)

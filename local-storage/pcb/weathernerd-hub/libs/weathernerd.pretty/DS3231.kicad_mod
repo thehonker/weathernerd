@@ -1,0 +1,88 @@
+(footprint "DS3231"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "DS3231 RTC breakout, 4-pin 2.54mm pitch, I2C")
+	(tags "DS3231 RTC real time clock I2C breakout")
+
+	(property "Reference" "U"
+		(at 0 -9.5 0)
+		(layer "F.SilkS")
+		(uuid "4c40021a-3818-4926-b11a-ce1d0ffac8d1")
+		(effects (font (size 1.27 1.27) (thickness 0.15)))
+	)
+	(property "Value" "DS3231"
+		(at 0 9.5 0)
+		(layer "F.Fab")
+		(uuid "98e72546-6ffe-4fdf-904c-0ec48131da88")
+		(effects (font (size 1.27 1.27) (thickness 0.15)))
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "c69e0bc6-6ad2-40e3-8630-c0c344c7f91f")
+		(effects (font (size 1.27 1.27) (thickness 0.15)))
+	)
+	(property "Description" "DS3231 RTC breakout, 4-pin 2.54mm pitch, I2C"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "11df708b-f5d1-4983-8471-d3fa87372eb3")
+		(effects (font (size 1.27 1.27) (thickness 0.15)))
+	)
+
+	(attr through_hole)
+
+	# Fab layer
+	(fp_line (start -8 -7.5) (end 8 -7.5) (stroke (width 0.1) (type solid)) (layer "F.Fab") (uuid "e3b56d2f-77cc-4de5-8e4f-6f752bff2a7a"))
+	(fp_line (start 8 -7.5) (end 8 7.5) (stroke (width 0.1) (type solid)) (layer "F.Fab") (uuid "73ec7add-93ba-4e19-9deb-02f4f14fab2f"))
+	(fp_line (start 8 7.5) (end -8 7.5) (stroke (width 0.1) (type solid)) (layer "F.Fab") (uuid "cea5ca93-62f6-4bbf-9c61-cad141e3d080"))
+	(fp_line (start -8 7.5) (end -8 -7.5) (stroke (width 0.1) (type solid)) (layer "F.Fab") (uuid "547fe9b0-c708-4aac-883d-9fbdfbc198b4"))
+
+	(fp_line (start -8.12 -7.62) (end 8.12 -7.62) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (uuid "9997b9db-22c5-4bab-9c9a-c3bc5eecd030"))
+	(fp_line (start 8.12 -7.62) (end 8.12 7.62) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (uuid "58c7b3ed-e408-417b-82a6-7dae34748bd2"))
+	(fp_line (start 8.12 7.62) (end -8.12 7.62) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (uuid "3766a7f5-c1c6-46f3-a565-bdd50879fb13"))
+	(fp_line (start -8.12 7.62) (end -8.12 -7.62) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (uuid "ea7ff667-5ade-4b0f-96e6-0d1c7b49a0b6"))
+	(fp_circle (center -5.31 -4.96) (end -5.01 -4.96) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (fill solid) (uuid "5fe948c3-ba58-4123-806b-2c5a6935f2f4"))
+
+	(fp_line (start -8.5 -8) (end 8.5 -8) (stroke (width 0.05) (type solid)) (layer "F.CrtYd") (uuid "f758b79f-4b71-450d-8b64-0b537b053b50"))
+	(fp_line (start 8.5 -8) (end 8.5 8) (stroke (width 0.05) (type solid)) (layer "F.CrtYd") (uuid "346e6758-0462-4a5c-bf46-402310581425"))
+	(fp_line (start 8.5 8) (end -8.5 8) (stroke (width 0.05) (type solid)) (layer "F.CrtYd") (uuid "b5ed8fe5-a0d7-4c25-9ee8-714912d16e66"))
+	(fp_line (start -8.5 8) (end -8.5 -8) (stroke (width 0.05) (type solid)) (layer "F.CrtYd") (uuid "aa8f7a36-8462-4838-8b76-a6093daba664"))
+
+	(fp_text user "${REFERENCE}" (at 0 0 0) (layer "F.Fab") (uuid "86f6c9bf-496c-4621-9e85-a6edc534f49f")
+		(effects (font (size 1.27 1.27) (thickness 0.15)))
+	)
+
+	(pad "SCL" thru_hole roundrect
+		(at -3.81 -4.96)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(roundrect_rratio 0.147059)
+		(uuid "35827ccb-4177-405e-85e9-773228acbf36")
+	)
+	(pad "SDA" thru_hole oval
+		(at -1.27 -4.96)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "4391a5fe-c88f-4db1-9f26-581c68163fd5")
+	)
+	(pad "VCC" thru_hole oval
+		(at 1.27 -4.96)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "ca279756-5f02-45fe-8486-2b1c08b0517b")
+	)
+	(pad "GND" thru_hole oval
+		(at 3.81 -4.96)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "8a7327a1-a6ca-42fe-bd58-bb40fc1574fb")
+	)
+
+	(embedded_fonts no)
+)

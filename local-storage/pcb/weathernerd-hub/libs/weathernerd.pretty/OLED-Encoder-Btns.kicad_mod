@@ -1,0 +1,123 @@
+(footprint "OLED-Encoder-Btns"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "OLED display + rotary encoder + CON/BAK buttons combo module, 9-pin 2.54mm pitch, I2C")
+	(tags "OLED SH1106 encoder rotary buttons combo I2C breakout")
+
+	(property "Reference" "U"
+		(at 0 -12 0)
+		(layer "F.SilkS")
+		(uuid "c3a32619-6885-4c54-90c2-5d4f0fc19b36")
+		(effects (font (size 1.27 1.27) (thickness 0.15)))
+	)
+	(property "Value" "OLED-Encoder-Btns"
+		(at 0 12 0)
+		(layer "F.Fab")
+		(uuid "6993f029-5118-4d88-827c-64ddddd21bd9")
+		(effects (font (size 1.27 1.27) (thickness 0.15)))
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "c02c1f4f-907f-4928-8275-96160fa6c990")
+		(effects (font (size 1.27 1.27) (thickness 0.15)))
+	)
+	(property "Description" "OLED display + rotary encoder + CON/BAK buttons combo module, 9-pin 2.54mm pitch, I2C"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "c03210f9-0f42-466a-8382-291a2e35aea2")
+		(effects (font (size 1.27 1.27) (thickness 0.15)))
+	)
+
+	(attr through_hole)
+
+	# Fab layer
+	(fp_line (start -14 -10) (end 14 -10) (stroke (width 0.1) (type solid)) (layer "F.Fab") (uuid "791119c9-a07c-40fa-a9c7-403a3f3e8f58"))
+	(fp_line (start 14 -10) (end 14 10) (stroke (width 0.1) (type solid)) (layer "F.Fab") (uuid "e043785a-1fbd-4866-b50f-c7152f89676c"))
+	(fp_line (start 14 10) (end -14 10) (stroke (width 0.1) (type solid)) (layer "F.Fab") (uuid "ba6fc820-36f8-46d8-8aff-5aa58bd3c79c"))
+	(fp_line (start -14 10) (end -14 -10) (stroke (width 0.1) (type solid)) (layer "F.Fab") (uuid "42d38d91-ec2a-4013-9881-45831a1751cf"))
+
+	(fp_line (start -14.12 -10.12) (end 14.12 -10.12) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (uuid "4e808d85-a628-4da1-a2b1-903d7964d621"))
+	(fp_line (start 14.12 -10.12) (end 14.12 10.12) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (uuid "a5ee2839-e8c1-4b3a-b97c-1a1e862b6478"))
+	(fp_line (start 14.12 10.12) (end -14.12 10.12) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (uuid "0f9755dd-167c-42d2-b01c-dfa47bf8df4e"))
+	(fp_line (start -14.12 10.12) (end -14.12 -10.12) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (uuid "f1d32ce0-e451-40bf-a2eb-3c00ffbcaf32"))
+	(fp_circle (center -11.66 -7.46) (end -11.36 -7.46) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (fill solid) (uuid "33943120-c261-40fe-8afe-682728f7a106"))
+
+	(fp_line (start -14.5 -10.5) (end 14.5 -10.5) (stroke (width 0.05) (type solid)) (layer "F.CrtYd") (uuid "54b6c06d-4d7d-44c8-9808-e59e2550fa62"))
+	(fp_line (start 14.5 -10.5) (end 14.5 10.5) (stroke (width 0.05) (type solid)) (layer "F.CrtYd") (uuid "f99b08e0-f284-470d-b141-8c6aa3b7a7eb"))
+	(fp_line (start 14.5 10.5) (end -14.5 10.5) (stroke (width 0.05) (type solid)) (layer "F.CrtYd") (uuid "90d2fd53-0158-4c22-bf7a-ba5261f1bdc0"))
+	(fp_line (start -14.5 10.5) (end -14.5 -10.5) (stroke (width 0.05) (type solid)) (layer "F.CrtYd") (uuid "07e5f75d-69c6-4359-a092-6133995e8f8e"))
+
+	(fp_text user "${REFERENCE}" (at 0 0 0) (layer "F.Fab") (uuid "75d4f8ea-9a16-4b42-a53c-8cc3623bcfbc")
+		(effects (font (size 1.27 1.27) (thickness 0.15)))
+	)
+
+	(pad "CON" thru_hole roundrect
+		(at -10.16 -7.46)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(roundrect_rratio 0.147059)
+		(uuid "abfabba5-ea31-4262-a04d-cc6748ed8cb0")
+	)
+	(pad "SDA" thru_hole oval
+		(at -7.62 -7.46)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "aa9803cd-acba-4db5-8f65-a77b91db980e")
+	)
+	(pad "SCL" thru_hole oval
+		(at -5.08 -7.46)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "fee75abb-fd4d-4784-9601-54744ee2cb37")
+	)
+	(pad "PSH" thru_hole oval
+		(at -2.54 -7.46)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "3694678c-afe8-493d-947f-950cf1431623")
+	)
+	(pad "TRA" thru_hole oval
+		(at 0 -7.46)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "48475d90-183e-4627-987a-2e4b07586529")
+	)
+	(pad "TRB" thru_hole oval
+		(at 2.54 -7.46)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "029a7bc5-1677-4ca4-83f2-2cff7dd9d88f")
+	)
+	(pad "BAK" thru_hole oval
+		(at 5.08 -7.46)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "4d1fc1c9-d1d3-4e75-bc86-bd3655a47b23")
+	)
+	(pad "GND" thru_hole oval
+		(at 7.62 -7.46)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "522d296a-bc84-4889-98b7-3dba92f830c5")
+	)
+	(pad "VCC" thru_hole oval
+		(at 10.16 -7.46)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "1e9a02f3-c49a-447d-8128-a8eb6c59f781")
+	)
+
+	(embedded_fonts no)
+)

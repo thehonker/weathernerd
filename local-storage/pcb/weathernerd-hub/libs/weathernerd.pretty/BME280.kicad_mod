@@ -1,0 +1,102 @@
+(footprint "BME280"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "BME280 temp/humidity/pressure sensor breakout, 6-pin 2.54mm pitch, I2C")
+	(tags "BME280 sensor temperature humidity pressure I2C breakout")
+
+	(property "Reference" "U"
+		(at 0 -9.5 0)
+		(layer "F.SilkS")
+		(uuid "a0990dc2-d726-4426-bd60-465c7a98355e")
+		(effects (font (size 1.27 1.27) (thickness 0.15)))
+	)
+	(property "Value" "BME280"
+		(at 0 9.5 0)
+		(layer "F.Fab")
+		(uuid "3dc21521-eaf7-4ed0-8ca1-9f67b8ae2246")
+		(effects (font (size 1.27 1.27) (thickness 0.15)))
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "c7c3d5ef-6527-404c-9a54-41d220762e90")
+		(effects (font (size 1.27 1.27) (thickness 0.15)))
+	)
+	(property "Description" "BME280 temp/humidity/pressure sensor breakout, 6-pin 2.54mm pitch, I2C"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "6ec3d0c6-710c-4c13-b1fc-4962b88755d8")
+		(effects (font (size 1.27 1.27) (thickness 0.15)))
+	)
+
+	(attr through_hole)
+
+	# Fab layer
+	(fp_line (start -10 -7.5) (end 10 -7.5) (stroke (width 0.1) (type solid)) (layer "F.Fab") (uuid "19dd1549-a4bf-4fa3-9ec0-fe62129d9c61"))
+	(fp_line (start 10 -7.5) (end 10 7.5) (stroke (width 0.1) (type solid)) (layer "F.Fab") (uuid "f6d35bb3-8e9e-462d-8970-5064a19f67f8"))
+	(fp_line (start 10 7.5) (end -10 7.5) (stroke (width 0.1) (type solid)) (layer "F.Fab") (uuid "7a52cff2-b8db-40eb-bf53-41baf4a63524"))
+	(fp_line (start -10 7.5) (end -10 -7.5) (stroke (width 0.1) (type solid)) (layer "F.Fab") (uuid "aa2c6cfc-228a-481f-ae36-76ffa2ba49b8"))
+
+	(fp_line (start -10.12 -7.62) (end 10.12 -7.62) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (uuid "69c2f87d-420d-4ed7-800e-96c43078e1b8"))
+	(fp_line (start 10.12 -7.62) (end 10.12 7.62) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (uuid "d5337552-8ba5-472f-bf63-976b620f4cf7"))
+	(fp_line (start 10.12 7.62) (end -10.12 7.62) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (uuid "223e2bb4-e609-4f26-a639-517fc397e599"))
+	(fp_line (start -10.12 7.62) (end -10.12 -7.62) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (uuid "487ce0c7-f356-4191-9061-c60986c45837"))
+	(fp_circle (center -7.85 -4.96) (end -7.55 -4.96) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (fill solid) (uuid "0e509846-d56b-4005-a128-2266a7110263"))
+
+	(fp_line (start -10.5 -8) (end 10.5 -8) (stroke (width 0.05) (type solid)) (layer "F.CrtYd") (uuid "2baf0b63-cc97-4b3e-83c9-b525fc467809"))
+	(fp_line (start 10.5 -8) (end 10.5 8) (stroke (width 0.05) (type solid)) (layer "F.CrtYd") (uuid "0bd75817-e576-4ddd-8b21-b6bece17796a"))
+	(fp_line (start 10.5 8) (end -10.5 8) (stroke (width 0.05) (type solid)) (layer "F.CrtYd") (uuid "f25601e6-7dcf-4464-a841-77c353ff3707"))
+	(fp_line (start -10.5 8) (end -10.5 -8) (stroke (width 0.05) (type solid)) (layer "F.CrtYd") (uuid "13ef5818-8a0a-48a4-8c3e-ab0dd6ea3893"))
+
+	(fp_text user "${REFERENCE}" (at 0 0 0) (layer "F.Fab") (uuid "4fe891e5-21c8-4d4d-98eb-6518b64d724e")
+		(effects (font (size 1.27 1.27) (thickness 0.15)))
+	)
+
+	(pad "VCC" thru_hole roundrect
+		(at -6.35 -4.96)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(roundrect_rratio 0.147059)
+		(uuid "c6544c18-e6af-462d-9f22-25e0569de1a7")
+	)
+	(pad "GND" thru_hole oval
+		(at -3.81 -4.96)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "95d6c5ee-c964-4e94-8a54-df6f4dba4783")
+	)
+	(pad "SCL" thru_hole oval
+		(at -1.27 -4.96)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "2365e5ac-0474-440b-9528-ebb318b3cb07")
+	)
+	(pad "SDA" thru_hole oval
+		(at 1.27 -4.96)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "960bdc69-1be7-4a03-bd65-0fb2847c282e")
+	)
+	(pad "CSB" thru_hole oval
+		(at 3.81 -4.96)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "7b2035ae-8c83-4521-9218-1ccf824cbc52")
+	)
+	(pad "SDO" thru_hole oval
+		(at 6.35 -4.96)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "a6cf37a5-3d8d-44ad-94ee-f56ecafeb238")
+	)
+
+	(embedded_fonts no)
+)

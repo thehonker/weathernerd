@@ -1,0 +1,2173 @@
+(export
+	(version "E")
+	(design
+		(source "/home/epers/repos/thehonker/weathernerd/local-storage/pcb/weathernerd-hub/weathernerd-hub.kicad_sch")
+		(date "2026-09-24T22:56:51")
+		(tool "Eeschema 10.0.6-10.0.6~ubuntu24.04.1")
+		(sheet
+			(number "1")
+			(name "/")
+			(tstamps "/")
+			(title_block
+				(title)
+				(company)
+				(rev)
+				(date)
+				(source "weathernerd-hub.kicad_sch")
+				(comment
+					(number "1")
+					(value "")
+				)
+				(comment
+					(number "2")
+					(value "")
+				)
+				(comment
+					(number "3")
+					(value "")
+				)
+				(comment
+					(number "4")
+					(value "")
+				)
+				(comment
+					(number "5")
+					(value "")
+				)
+				(comment
+					(number "6")
+					(value "")
+				)
+				(comment
+					(number "7")
+					(value "")
+				)
+				(comment
+					(number "8")
+					(value "")
+				)
+				(comment
+					(number "9")
+					(value "")
+				)
+			)
+		)
+	)
+	(components
+		(comp
+			(ref "C1")
+			(value "1nF")
+			(fields
+				(field
+					(name "Footprint")
+				)
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "Device")
+				(part "C")
+				(description "Unpolarized capacitor")
+			)
+			(property
+				(name "Sheetname")
+				(value "weathernerd-hub")
+			)
+			(property
+				(name "Sheetfile")
+				(value "weathernerd-hub.kicad_sch")
+			)
+			(property
+				(name "ki_keywords")
+				(value "cap capacitor")
+			)
+			(property
+				(name "ki_fp_filters")
+				(value "C_*")
+			)
+			(sheetpath
+				(names "/")
+				(tstamps "/")
+			)
+			(tstamps "7f2fc6f7-7dde-44ec-b354-77311dac1d08")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "C2")
+			(value "470nF")
+			(fields
+				(field
+					(name "Footprint")
+				)
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "Device")
+				(part "C")
+				(description "Unpolarized capacitor")
+			)
+			(property
+				(name "Sheetname")
+				(value "weathernerd-hub")
+			)
+			(property
+				(name "Sheetfile")
+				(value "weathernerd-hub.kicad_sch")
+			)
+			(property
+				(name "ki_keywords")
+				(value "cap capacitor")
+			)
+			(property
+				(name "ki_fp_filters")
+				(value "C_*")
+			)
+			(sheetpath
+				(names "/")
+				(tstamps "/")
+			)
+			(tstamps "a8b7f90c-14f9-4af8-91e6-3b869a88ed68")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "D1")
+			(value "1N4148")
+			(fields
+				(field
+					(name "Footprint")
+				)
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "Device")
+				(part "D")
+				(description "Diode")
+			)
+			(property
+				(name "Sheetname")
+				(value "weathernerd-hub")
+			)
+			(property
+				(name "Sheetfile")
+				(value "weathernerd-hub.kicad_sch")
+			)
+			(property
+				(name "ki_keywords")
+				(value "diode")
+			)
+			(property
+				(name "ki_fp_filters")
+				(value "TO-???* *_Diode_* *SingleDiode* D_*")
+			)
+			(sheetpath
+				(names "/")
+				(tstamps "/")
+			)
+			(tstamps "cc648c02-6963-44cc-8416-9645a637708b")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "D2")
+			(value "1N4148")
+			(fields
+				(field
+					(name "Footprint")
+				)
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "Device")
+				(part "D")
+				(description "Diode")
+			)
+			(property
+				(name "Sheetname")
+				(value "weathernerd-hub")
+			)
+			(property
+				(name "Sheetfile")
+				(value "weathernerd-hub.kicad_sch")
+			)
+			(property
+				(name "ki_keywords")
+				(value "diode")
+			)
+			(property
+				(name "ki_fp_filters")
+				(value "TO-???* *_Diode_* *SingleDiode* D_*")
+			)
+			(sheetpath
+				(names "/")
+				(tstamps "/")
+			)
+			(tstamps "ef8d8117-1cb4-4d57-8cef-c894e40a8170")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "J1")
+			(value "WindNerd-Conn")
+			(fields
+				(field
+					(name "Footprint")
+				)
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "weathernerd")
+				(part "WindNerd-Conn")
+				(description "WindNerd anemometer board connector, 4-pin 2.54mm pitch (VCC, GND, TRG, RX)")
+			)
+			(property
+				(name "Sheetname")
+				(value "weathernerd-hub")
+			)
+			(property
+				(name "Sheetfile")
+				(value "weathernerd-hub.kicad_sch")
+			)
+			(property
+				(name "ki_keywords")
+				(value "WindNerd anemometer connector header")
+			)
+			(property
+				(name "ki_fp_filters")
+				(value "WindNerd*Conn*")
+			)
+			(sheetpath
+				(names "/")
+				(tstamps "/")
+			)
+			(tstamps "9b10b3ad-0b5f-4af7-93a2-67fae2259da3")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "VCC")
+						)
+						(pin
+							(num "GND")
+						)
+						(pin
+							(num "TRG")
+						)
+						(pin
+							(num "RX")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "Q1")
+			(value "2N7002")
+			(fields
+				(field
+					(name "Footprint")
+				)
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "Device")
+				(part "Q_NMOS")
+				(description "N-MOSFET transistor")
+			)
+			(property
+				(name "Sheetname")
+				(value "weathernerd-hub")
+			)
+			(property
+				(name "Sheetfile")
+				(value "weathernerd-hub.kicad_sch")
+			)
+			(property
+				(name "ki_keywords")
+				(value "NMOS N-MOS")
+			)
+			(sheetpath
+				(names "/")
+				(tstamps "/")
+			)
+			(tstamps "b5047590-f863-40b4-bf8c-fa60f15af2a6")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "G")
+						)
+						(pin
+							(num "D")
+						)
+						(pin
+							(num "S")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "Q2")
+			(value "AO3401")
+			(fields
+				(field
+					(name "Footprint")
+				)
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "Device")
+				(part "Q_PMOS")
+				(description "P-MOSFET transistor")
+			)
+			(property
+				(name "Sheetname")
+				(value "weathernerd-hub")
+			)
+			(property
+				(name "Sheetfile")
+				(value "weathernerd-hub.kicad_sch")
+			)
+			(property
+				(name "ki_keywords")
+				(value "PMOS P-MOS")
+			)
+			(sheetpath
+				(names "/")
+				(tstamps "/")
+			)
+			(tstamps "d451b039-bcf3-4428-9a0c-9bbe06f72a18")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "G")
+						)
+						(pin
+							(num "D")
+						)
+						(pin
+							(num "S")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R1")
+			(value "10k")
+			(fields
+				(field
+					(name "Footprint")
+				)
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "Device")
+				(part "R")
+				(description "Resistor")
+			)
+			(property
+				(name "Sheetname")
+				(value "weathernerd-hub")
+			)
+			(property
+				(name "Sheetfile")
+				(value "weathernerd-hub.kicad_sch")
+			)
+			(property
+				(name "ki_keywords")
+				(value "R res resistor")
+			)
+			(property
+				(name "ki_fp_filters")
+				(value "R_*")
+			)
+			(sheetpath
+				(names "/")
+				(tstamps "/")
+			)
+			(tstamps "a6df50a9-8408-462a-83bd-f4efa6f9fb28")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R2")
+			(value "10k")
+			(fields
+				(field
+					(name "Footprint")
+				)
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "Device")
+				(part "R")
+				(description "Resistor")
+			)
+			(property
+				(name "Sheetname")
+				(value "weathernerd-hub")
+			)
+			(property
+				(name "Sheetfile")
+				(value "weathernerd-hub.kicad_sch")
+			)
+			(property
+				(name "ki_keywords")
+				(value "R res resistor")
+			)
+			(property
+				(name "ki_fp_filters")
+				(value "R_*")
+			)
+			(sheetpath
+				(names "/")
+				(tstamps "/")
+			)
+			(tstamps "3b3a2d73-2cc5-4298-ab68-ff0020712f63")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "R3")
+			(value "10k")
+			(fields
+				(field
+					(name "Footprint")
+				)
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "Device")
+				(part "R")
+				(description "Resistor")
+			)
+			(property
+				(name "Sheetname")
+				(value "weathernerd-hub")
+			)
+			(property
+				(name "Sheetfile")
+				(value "weathernerd-hub.kicad_sch")
+			)
+			(property
+				(name "ki_keywords")
+				(value "R res resistor")
+			)
+			(property
+				(name "ki_fp_filters")
+				(value "R_*")
+			)
+			(sheetpath
+				(names "/")
+				(tstamps "/")
+			)
+			(tstamps "921038fb-a95b-4fb0-960c-361e96acf02b")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "U1")
+			(value "ESP32-C6-SuperMini")
+			(fields
+				(field
+					(name "Footprint")
+				)
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "weathernerd")
+				(part "ESP32-C6-SuperMini")
+				(description "ESP32-C6 Super Mini, WiFi 6, BLE 5.3, Zigbee, Thread, 22 GPIO, 4MB flash")
+			)
+			(property
+				(name "Sheetname")
+				(value "weathernerd-hub")
+			)
+			(property
+				(name "Sheetfile")
+				(value "weathernerd-hub.kicad_sch")
+			)
+			(property
+				(name "ki_keywords")
+				(value "ESP32 ESP32-C6 SuperMini WiFi Bluetooth Zigbee Thread RISC-V")
+			)
+			(property
+				(name "ki_fp_filters")
+				(value "ESP32*C6*SuperMini*")
+			)
+			(sheetpath
+				(names "/")
+				(tstamps "/")
+			)
+			(tstamps "5050da2b-94c4-428e-94e2-7d1bd78b8174")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "16")
+						)
+						(pin
+							(num "17")
+						)
+						(pin
+							(num "0")
+						)
+						(pin
+							(num "1")
+						)
+						(pin
+							(num "2")
+						)
+						(pin
+							(num "3")
+						)
+						(pin
+							(num "4")
+						)
+						(pin
+							(num "5")
+						)
+						(pin
+							(num "6")
+						)
+						(pin
+							(num "7")
+						)
+						(pin
+							(num "23")
+						)
+						(pin
+							(num "22")
+						)
+						(pin
+							(num "5V")
+						)
+						(pin
+							(num "GND")
+						)
+						(pin
+							(num "3V3")
+						)
+						(pin
+							(num "20")
+						)
+						(pin
+							(num "19")
+						)
+						(pin
+							(num "18")
+						)
+						(pin
+							(num "15")
+						)
+						(pin
+							(num "14")
+						)
+						(pin
+							(num "9")
+						)
+						(pin
+							(num "8")
+						)
+						(pin
+							(num "12")
+						)
+						(pin
+							(num "13")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "U2")
+			(value "MicroSD-SPI")
+			(fields
+				(field
+					(name "Footprint")
+				)
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "weathernerd")
+				(part "MicroSD-SPI")
+				(description "MicroSD card SPI breakout module, 6-pin, 3.3V")
+			)
+			(property
+				(name "Sheetname")
+				(value "weathernerd-hub")
+			)
+			(property
+				(name "Sheetfile")
+				(value "weathernerd-hub.kicad_sch")
+			)
+			(property
+				(name "ki_keywords")
+				(value "microSD SD card SPI breakout")
+			)
+			(property
+				(name "ki_fp_filters")
+				(value "MicroSD*SPI*")
+			)
+			(sheetpath
+				(names "/")
+				(tstamps "/")
+			)
+			(tstamps "1c07eeea-e25a-46ee-ba91-9223bef4186b")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "CS")
+						)
+						(pin
+							(num "MOSI")
+						)
+						(pin
+							(num "MISO")
+						)
+						(pin
+							(num "3V3")
+						)
+						(pin
+							(num "CLK")
+						)
+						(pin
+							(num "GND")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "U3")
+			(value "BME280")
+			(fields
+				(field
+					(name "Footprint")
+				)
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "weathernerd")
+				(part "BME280")
+				(description "BME280 temp/humidity/pressure sensor breakout, 6-pin 2.54mm pitch, I2C")
+			)
+			(property
+				(name "Sheetname")
+				(value "weathernerd-hub")
+			)
+			(property
+				(name "Sheetfile")
+				(value "weathernerd-hub.kicad_sch")
+			)
+			(property
+				(name "ki_keywords")
+				(value "BME280 sensor temperature humidity pressure I2C breakout")
+			)
+			(property
+				(name "ki_fp_filters")
+				(value "BME280*")
+			)
+			(sheetpath
+				(names "/")
+				(tstamps "/")
+			)
+			(tstamps "0caeeba9-1f8e-4e3f-9b34-38137241afd1")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "VCC")
+						)
+						(pin
+							(num "GND")
+						)
+						(pin
+							(num "SCL")
+						)
+						(pin
+							(num "SDA")
+						)
+						(pin
+							(num "CSB")
+						)
+						(pin
+							(num "SDO")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "U4")
+			(value "DS3231")
+			(fields
+				(field
+					(name "Footprint")
+				)
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "weathernerd")
+				(part "DS3231")
+				(description "DS3231 RTC breakout, 4-pin 2.54mm pitch, I2C")
+			)
+			(property
+				(name "Sheetname")
+				(value "weathernerd-hub")
+			)
+			(property
+				(name "Sheetfile")
+				(value "weathernerd-hub.kicad_sch")
+			)
+			(property
+				(name "ki_keywords")
+				(value "DS3231 RTC real time clock I2C breakout")
+			)
+			(property
+				(name "ki_fp_filters")
+				(value "DS3231*")
+			)
+			(sheetpath
+				(names "/")
+				(tstamps "/")
+			)
+			(tstamps "e27b8f95-6ab2-4c99-afb2-e4b024db5a70")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "SCL")
+						)
+						(pin
+							(num "SDA")
+						)
+						(pin
+							(num "VCC")
+						)
+						(pin
+							(num "GND")
+						)
+					)
+				)
+			)
+		)
+		(comp
+			(ref "U5")
+			(value "OLED-Encoder-Btns")
+			(fields
+				(field
+					(name "Footprint")
+				)
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description")
+				)
+			)
+			(libsource
+				(lib "weathernerd")
+				(part "OLED-Encoder-Btns")
+				(description "OLED display + rotary encoder + CON/BAK buttons combo module, 9-pin 2.54mm pitch, I2C")
+			)
+			(property
+				(name "Sheetname")
+				(value "weathernerd-hub")
+			)
+			(property
+				(name "Sheetfile")
+				(value "weathernerd-hub.kicad_sch")
+			)
+			(property
+				(name "ki_keywords")
+				(value "OLED SH1106 encoder rotary buttons combo I2C breakout")
+			)
+			(property
+				(name "ki_fp_filters")
+				(value "OLED*Encoder*")
+			)
+			(sheetpath
+				(names "/")
+				(tstamps "/")
+			)
+			(tstamps "5e043379-25fa-4981-99fa-ea325953c827")
+			(units
+				(unit
+					(name "A")
+					(pins
+						(pin
+							(num "CON")
+						)
+						(pin
+							(num "SDA")
+						)
+						(pin
+							(num "SCL")
+						)
+						(pin
+							(num "PSH")
+						)
+						(pin
+							(num "TRA")
+						)
+						(pin
+							(num "TRB")
+						)
+						(pin
+							(num "BAK")
+						)
+						(pin
+							(num "GND")
+						)
+						(pin
+							(num "VCC")
+						)
+					)
+				)
+			)
+		)
+	)
+	(groups)
+	(variants)
+	(libparts
+		(libpart
+			(lib "Device")
+			(part "C")
+			(description "Unpolarized capacitor")
+			(footprints
+				(fp "C_*")
+			)
+			(fields
+				(field
+					(name "Reference") "C")
+				(field
+					(name "Value") "C")
+				(field
+					(name "Footprint")
+				)
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Unpolarized capacitor")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "Device")
+			(part "D")
+			(description "Diode")
+			(footprints
+				(fp "TO-???*")
+				(fp "*_Diode_*")
+				(fp "*SingleDiode*")
+				(fp "D_*")
+			)
+			(fields
+				(field
+					(name "Reference") "D")
+				(field
+					(name "Value") "D")
+				(field
+					(name "Footprint")
+				)
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Diode")
+				(field
+					(name "Sim.Device") "D")
+				(field
+					(name "Sim.Pins") "1=K 2=A")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "K")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "A")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "Device")
+			(part "Q_NMOS")
+			(description "N-MOSFET transistor")
+			(fields
+				(field
+					(name "Reference") "Q")
+				(field
+					(name "Value") "Q_NMOS")
+				(field
+					(name "Footprint")
+				)
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "N-MOSFET transistor")
+			)
+			(pins
+				(pin
+					(num "D")
+					(name "D")
+					(type "passive")
+				)
+				(pin
+					(num "G")
+					(name "G")
+					(type "input")
+				)
+				(pin
+					(num "S")
+					(name "S")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "Device")
+			(part "Q_PMOS")
+			(description "P-MOSFET transistor")
+			(fields
+				(field
+					(name "Reference") "Q")
+				(field
+					(name "Value") "Q_PMOS")
+				(field
+					(name "Footprint")
+				)
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "P-MOSFET transistor")
+			)
+			(pins
+				(pin
+					(num "D")
+					(name "D")
+					(type "passive")
+				)
+				(pin
+					(num "G")
+					(name "G")
+					(type "input")
+				)
+				(pin
+					(num "S")
+					(name "S")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "Device")
+			(part "R")
+			(description "Resistor")
+			(footprints
+				(fp "R_*")
+			)
+			(fields
+				(field
+					(name "Reference") "R")
+				(field
+					(name "Value") "R")
+				(field
+					(name "Footprint")
+				)
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "Resistor")
+			)
+			(pins
+				(pin
+					(num "1")
+					(name "")
+					(type "passive")
+				)
+				(pin
+					(num "2")
+					(name "")
+					(type "passive")
+				)
+			)
+		)
+		(libpart
+			(lib "weathernerd")
+			(part "BME280")
+			(description "BME280 temp/humidity/pressure sensor breakout, 6-pin 2.54mm pitch, I2C")
+			(footprints
+				(fp "BME280*")
+			)
+			(fields
+				(field
+					(name "Reference") "U")
+				(field
+					(name "Value") "BME280")
+				(field
+					(name "Footprint") "weathernerd:BME280")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "BME280 temp/humidity/pressure sensor breakout, 6-pin 2.54mm pitch, I2C")
+			)
+			(pins
+				(pin
+					(num "CSB")
+					(name "CSB")
+					(type "input")
+				)
+				(pin
+					(num "GND")
+					(name "GND")
+					(type "power_in")
+				)
+				(pin
+					(num "SCL")
+					(name "SCL")
+					(type "input")
+				)
+				(pin
+					(num "SDA")
+					(name "SDA")
+					(type "bidirectional")
+				)
+				(pin
+					(num "SDO")
+					(name "SDO")
+					(type "bidirectional")
+				)
+				(pin
+					(num "VCC")
+					(name "VCC")
+					(type "power_in")
+				)
+			)
+		)
+		(libpart
+			(lib "weathernerd")
+			(part "DS3231")
+			(description "DS3231 RTC breakout, 4-pin 2.54mm pitch, I2C")
+			(footprints
+				(fp "DS3231*")
+			)
+			(fields
+				(field
+					(name "Reference") "U")
+				(field
+					(name "Value") "DS3231")
+				(field
+					(name "Footprint") "weathernerd:DS3231")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "DS3231 RTC breakout, 4-pin 2.54mm pitch, I2C")
+			)
+			(pins
+				(pin
+					(num "GND")
+					(name "GND")
+					(type "power_in")
+				)
+				(pin
+					(num "SCL")
+					(name "SCL")
+					(type "input")
+				)
+				(pin
+					(num "SDA")
+					(name "SDA")
+					(type "bidirectional")
+				)
+				(pin
+					(num "VCC")
+					(name "VCC")
+					(type "power_in")
+				)
+			)
+		)
+		(libpart
+			(lib "weathernerd")
+			(part "ESP32-C6-SuperMini")
+			(description "ESP32-C6 Super Mini, WiFi 6, BLE 5.3, Zigbee, Thread, 22 GPIO, 4MB flash")
+			(footprints
+				(fp "ESP32*C6*SuperMini*")
+			)
+			(fields
+				(field
+					(name "Reference") "U")
+				(field
+					(name "Value") "ESP32-C6-SuperMini")
+				(field
+					(name "Footprint") "weathernerd:ESP32-C6-SuperMini")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "ESP32-C6 Super Mini, WiFi 6, BLE 5.3, Zigbee, Thread, 22 GPIO, 4MB flash")
+			)
+			(pins
+				(pin
+					(num "0")
+					(name "IO0")
+					(type "bidirectional")
+				)
+				(pin
+					(num "1")
+					(name "IO1")
+					(type "bidirectional")
+				)
+				(pin
+					(num "2")
+					(name "IO2")
+					(type "bidirectional")
+				)
+				(pin
+					(num "3")
+					(name "IO3")
+					(type "bidirectional")
+				)
+				(pin
+					(num "3V3")
+					(name "3V3")
+					(type "power_in")
+				)
+				(pin
+					(num "4")
+					(name "IO4")
+					(type "bidirectional")
+				)
+				(pin
+					(num "5")
+					(name "IO5")
+					(type "bidirectional")
+				)
+				(pin
+					(num "5V")
+					(name "5V")
+					(type "power_in")
+				)
+				(pin
+					(num "6")
+					(name "IO6")
+					(type "bidirectional")
+				)
+				(pin
+					(num "7")
+					(name "IO7")
+					(type "bidirectional")
+				)
+				(pin
+					(num "8")
+					(name "IO8")
+					(type "bidirectional")
+				)
+				(pin
+					(num "9")
+					(name "IO9")
+					(type "bidirectional")
+				)
+				(pin
+					(num "12")
+					(name "IO12")
+					(type "bidirectional")
+				)
+				(pin
+					(num "13")
+					(name "IO13")
+					(type "bidirectional")
+				)
+				(pin
+					(num "14")
+					(name "IO14")
+					(type "bidirectional")
+				)
+				(pin
+					(num "15")
+					(name "IO15")
+					(type "bidirectional")
+				)
+				(pin
+					(num "16")
+					(name "IO16")
+					(type "bidirectional")
+				)
+				(pin
+					(num "17")
+					(name "IO17")
+					(type "bidirectional")
+				)
+				(pin
+					(num "18")
+					(name "IO18")
+					(type "bidirectional")
+				)
+				(pin
+					(num "19")
+					(name "IO19")
+					(type "bidirectional")
+				)
+				(pin
+					(num "20")
+					(name "IO20")
+					(type "bidirectional")
+				)
+				(pin
+					(num "22")
+					(name "IO22")
+					(type "bidirectional")
+				)
+				(pin
+					(num "23")
+					(name "IO23")
+					(type "bidirectional")
+				)
+				(pin
+					(num "GND")
+					(name "GND")
+					(type "power_in")
+				)
+			)
+		)
+		(libpart
+			(lib "weathernerd")
+			(part "MicroSD-SPI")
+			(description "MicroSD card SPI breakout module, 6-pin, 3.3V")
+			(footprints
+				(fp "MicroSD*SPI*")
+			)
+			(fields
+				(field
+					(name "Reference") "U")
+				(field
+					(name "Value") "MicroSD-SPI")
+				(field
+					(name "Footprint") "weathernerd:MicroSD-SPI")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "MicroSD card SPI breakout module, 6-pin, 3.3V")
+			)
+			(pins
+				(pin
+					(num "3V3")
+					(name "3V3")
+					(type "power_in")
+				)
+				(pin
+					(num "CLK")
+					(name "CLK")
+					(type "input")
+				)
+				(pin
+					(num "CS")
+					(name "CS")
+					(type "input")
+				)
+				(pin
+					(num "GND")
+					(name "GND")
+					(type "power_in")
+				)
+				(pin
+					(num "MISO")
+					(name "MISO")
+					(type "output")
+				)
+				(pin
+					(num "MOSI")
+					(name "MOSI")
+					(type "input")
+				)
+			)
+		)
+		(libpart
+			(lib "weathernerd")
+			(part "OLED-Encoder-Btns")
+			(description "OLED display + rotary encoder + CON/BAK buttons combo module, 9-pin 2.54mm pitch, I2C")
+			(footprints
+				(fp "OLED*Encoder*")
+			)
+			(fields
+				(field
+					(name "Reference") "U")
+				(field
+					(name "Value") "OLED-Encoder-Btns")
+				(field
+					(name "Footprint") "weathernerd:OLED-Encoder-Btns")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "OLED display + rotary encoder + CON/BAK buttons combo module, 9-pin 2.54mm pitch, I2C")
+			)
+			(pins
+				(pin
+					(num "BAK")
+					(name "BAK")
+					(type "bidirectional")
+				)
+				(pin
+					(num "CON")
+					(name "CON")
+					(type "bidirectional")
+				)
+				(pin
+					(num "GND")
+					(name "GND")
+					(type "power_in")
+				)
+				(pin
+					(num "PSH")
+					(name "PSH")
+					(type "bidirectional")
+				)
+				(pin
+					(num "SCL")
+					(name "SCL")
+					(type "input")
+				)
+				(pin
+					(num "SDA")
+					(name "SDA")
+					(type "bidirectional")
+				)
+				(pin
+					(num "TRA")
+					(name "TRA")
+					(type "bidirectional")
+				)
+				(pin
+					(num "TRB")
+					(name "TRB")
+					(type "bidirectional")
+				)
+				(pin
+					(num "VCC")
+					(name "VCC")
+					(type "power_in")
+				)
+			)
+		)
+		(libpart
+			(lib "weathernerd")
+			(part "WindNerd-Conn")
+			(description "WindNerd anemometer board connector, 4-pin 2.54mm pitch (VCC, GND, TRG, RX)")
+			(footprints
+				(fp "WindNerd*Conn*")
+			)
+			(fields
+				(field
+					(name "Reference") "J")
+				(field
+					(name "Value") "WindNerd-Conn")
+				(field
+					(name "Footprint") "weathernerd:WindNerd-Conn")
+				(field
+					(name "Datasheet")
+				)
+				(field
+					(name "Description") "WindNerd anemometer board connector, 4-pin 2.54mm pitch (VCC, GND, TRG, RX)")
+			)
+			(pins
+				(pin
+					(num "GND")
+					(name "GND")
+					(type "power_in")
+				)
+				(pin
+					(num "RX")
+					(name "RX")
+					(type "input")
+				)
+				(pin
+					(num "TRG")
+					(name "TRG")
+					(type "output")
+				)
+				(pin
+					(num "VCC")
+					(name "VCC")
+					(type "power_in")
+				)
+			)
+		)
+	)
+	(libraries
+		(library
+			(logical "weathernerd")
+			(uri "${KIPRJMOD}/libs/weathernerd.kicad_sym")
+		)
+	)
+	(nets
+		(net
+			(code "1")
+			(name "+3V3")
+			(class "Default")
+			(node
+				(ref "J1")
+				(pin "VCC")
+				(pinfunction "VCC_VCC")
+				(pintype "power_in")
+			)
+			(node
+				(ref "Q2")
+				(pin "S")
+				(pinfunction "S_S")
+				(pintype "passive")
+			)
+			(node
+				(ref "R3")
+				(pin "2")
+				(pintype "passive")
+			)
+			(node
+				(ref "U1")
+				(pin "3V3")
+				(pinfunction "3V3_3V3")
+				(pintype "power_in")
+			)
+			(node
+				(ref "U2")
+				(pin "3V3")
+				(pinfunction "3V3_3V3")
+				(pintype "power_in")
+			)
+			(node
+				(ref "U3")
+				(pin "VCC")
+				(pinfunction "VCC_VCC")
+				(pintype "power_in")
+			)
+			(node
+				(ref "U4")
+				(pin "VCC")
+				(pinfunction "VCC_VCC")
+				(pintype "power_in")
+			)
+		)
+		(net
+			(code "2")
+			(name "BAK_BTN")
+			(class "Default")
+			(node
+				(ref "U1")
+				(pin "23")
+				(pinfunction "IO23_23")
+				(pintype "bidirectional")
+			)
+			(node
+				(ref "U5")
+				(pin "BAK")
+				(pinfunction "BAK_BAK")
+				(pintype "bidirectional")
+			)
+		)
+		(net
+			(code "3")
+			(name "CON_BTN")
+			(class "Default")
+			(node
+				(ref "U1")
+				(pin "22")
+				(pinfunction "IO22_22")
+				(pintype "bidirectional")
+			)
+			(node
+				(ref "U5")
+				(pin "CON")
+				(pinfunction "CON_CON")
+				(pintype "bidirectional")
+			)
+		)
+		(net
+			(code "4")
+			(name "CPUMP")
+			(class "Default")
+			(node
+				(ref "C1")
+				(pin "1")
+				(pintype "passive")
+			)
+			(node
+				(ref "D1")
+				(pin "1")
+				(pinfunction "K_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "D2")
+				(pin "2")
+				(pinfunction "A_2")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "5")
+			(name "ENC_A")
+			(class "Default")
+			(node
+				(ref "U1")
+				(pin "14")
+				(pinfunction "IO14_14")
+				(pintype "bidirectional")
+			)
+			(node
+				(ref "U5")
+				(pin "TRA")
+				(pinfunction "TRA_TRA")
+				(pintype "bidirectional")
+			)
+		)
+		(net
+			(code "6")
+			(name "ENC_B")
+			(class "Default")
+			(node
+				(ref "U1")
+				(pin "20")
+				(pinfunction "IO20_20")
+				(pintype "bidirectional")
+			)
+			(node
+				(ref "U5")
+				(pin "TRB")
+				(pinfunction "TRB_TRB")
+				(pintype "bidirectional")
+			)
+		)
+		(net
+			(code "7")
+			(name "ENC_PSH")
+			(class "Default")
+			(node
+				(ref "U5")
+				(pin "PSH")
+				(pinfunction "PSH_PSH")
+				(pintype "bidirectional")
+			)
+		)
+		(net
+			(code "8")
+			(name "GND")
+			(class "Default")
+			(node
+				(ref "C1")
+				(pin "2")
+				(pintype "passive")
+			)
+			(node
+				(ref "C2")
+				(pin "2")
+				(pintype "passive")
+			)
+			(node
+				(ref "J1")
+				(pin "GND")
+				(pinfunction "GND_GND")
+				(pintype "power_in")
+			)
+			(node
+				(ref "Q1")
+				(pin "S")
+				(pinfunction "S_S")
+				(pintype "passive")
+			)
+			(node
+				(ref "R2")
+				(pin "2")
+				(pintype "passive")
+			)
+			(node
+				(ref "U1")
+				(pin "GND")
+				(pinfunction "GND_GND")
+				(pintype "power_in")
+			)
+			(node
+				(ref "U2")
+				(pin "GND")
+				(pinfunction "GND_GND")
+				(pintype "power_in")
+			)
+			(node
+				(ref "U3")
+				(pin "GND")
+				(pinfunction "GND_GND")
+				(pintype "power_in")
+			)
+			(node
+				(ref "U4")
+				(pin "GND")
+				(pinfunction "GND_GND")
+				(pintype "power_in")
+			)
+			(node
+				(ref "U5")
+				(pin "GND")
+				(pinfunction "GND_GND")
+				(pintype "power_in")
+			)
+		)
+		(net
+			(code "9")
+			(name "I2C_SCL")
+			(class "Default")
+			(node
+				(ref "U1")
+				(pin "7")
+				(pinfunction "IO7_7")
+				(pintype "bidirectional")
+			)
+			(node
+				(ref "U3")
+				(pin "SCL")
+				(pinfunction "SCL_SCL")
+				(pintype "input")
+			)
+			(node
+				(ref "U4")
+				(pin "SCL")
+				(pinfunction "SCL_SCL")
+				(pintype "input")
+			)
+			(node
+				(ref "U5")
+				(pin "SCL")
+				(pinfunction "SCL_SCL")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "10")
+			(name "I2C_SDA")
+			(class "Default")
+			(node
+				(ref "U1")
+				(pin "6")
+				(pinfunction "IO6_6")
+				(pintype "bidirectional")
+			)
+			(node
+				(ref "U3")
+				(pin "SDA")
+				(pinfunction "SDA_SDA")
+				(pintype "bidirectional")
+			)
+			(node
+				(ref "U4")
+				(pin "SDA")
+				(pinfunction "SDA_SDA")
+				(pintype "bidirectional")
+			)
+			(node
+				(ref "U5")
+				(pin "SDA")
+				(pinfunction "SDA_SDA")
+				(pintype "bidirectional")
+			)
+		)
+		(net
+			(code "11")
+			(name "OLED_GATE")
+			(class "Default")
+			(node
+				(ref "Q2")
+				(pin "G")
+				(pinfunction "G_G")
+				(pintype "input")
+			)
+			(node
+				(ref "R3")
+				(pin "1")
+				(pintype "passive")
+			)
+			(node
+				(ref "U1")
+				(pin "5")
+				(pinfunction "IO5_5")
+				(pintype "bidirectional")
+			)
+		)
+		(net
+			(code "12")
+			(name "OLED_PWR")
+			(class "Default")
+			(node
+				(ref "Q2")
+				(pin "D")
+				(pinfunction "D_D")
+				(pintype "passive")
+			)
+			(node
+				(ref "U5")
+				(pin "VCC")
+				(pinfunction "VCC_VCC")
+				(pintype "power_in")
+			)
+		)
+		(net
+			(code "13")
+			(name "PEAK")
+			(class "Default")
+			(node
+				(ref "C2")
+				(pin "1")
+				(pintype "passive")
+			)
+			(node
+				(ref "D2")
+				(pin "1")
+				(pinfunction "K_1")
+				(pintype "passive")
+			)
+			(node
+				(ref "Q1")
+				(pin "D")
+				(pinfunction "D_D")
+				(pintype "passive")
+			)
+			(node
+				(ref "R1")
+				(pin "1")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "14")
+			(name "PIEZO+")
+			(class "Default")
+			(node
+				(ref "D1")
+				(pin "2")
+				(pinfunction "A_2")
+				(pintype "passive")
+			)
+		)
+		(net
+			(code "15")
+			(name "RAIN_ADC")
+			(class "Default")
+			(node
+				(ref "R1")
+				(pin "2")
+				(pintype "passive")
+			)
+			(node
+				(ref "U1")
+				(pin "0")
+				(pinfunction "IO0_0")
+				(pintype "bidirectional")
+			)
+		)
+		(net
+			(code "16")
+			(name "RAIN_RST")
+			(class "Default")
+			(node
+				(ref "Q1")
+				(pin "G")
+				(pinfunction "G_G")
+				(pintype "input")
+			)
+			(node
+				(ref "R2")
+				(pin "1")
+				(pintype "passive")
+			)
+			(node
+				(ref "U1")
+				(pin "8")
+				(pinfunction "IO8_8")
+				(pintype "bidirectional")
+			)
+		)
+		(net
+			(code "17")
+			(name "SPI_CS")
+			(class "Default")
+			(node
+				(ref "U1")
+				(pin "3")
+				(pinfunction "IO3_3")
+				(pintype "bidirectional")
+			)
+			(node
+				(ref "U2")
+				(pin "CS")
+				(pinfunction "CS_CS")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "18")
+			(name "SPI_MISO")
+			(class "Default")
+			(node
+				(ref "U1")
+				(pin "19")
+				(pinfunction "IO19_19")
+				(pintype "bidirectional")
+			)
+			(node
+				(ref "U2")
+				(pin "MISO")
+				(pinfunction "MISO_MISO")
+				(pintype "output")
+			)
+		)
+		(net
+			(code "19")
+			(name "SPI_MOSI")
+			(class "Default")
+			(node
+				(ref "U1")
+				(pin "18")
+				(pinfunction "IO18_18")
+				(pintype "bidirectional")
+			)
+			(node
+				(ref "U2")
+				(pin "MOSI")
+				(pinfunction "MOSI_MOSI")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "20")
+			(name "SPI_SCK")
+			(class "Default")
+			(node
+				(ref "U1")
+				(pin "2")
+				(pinfunction "IO2_2")
+				(pintype "bidirectional")
+			)
+		)
+		(net
+			(code "21")
+			(name "WIND_TRIG")
+			(class "Default")
+			(node
+				(ref "J1")
+				(pin "TRG")
+				(pinfunction "TRG_TRG")
+				(pintype "output")
+			)
+			(node
+				(ref "U1")
+				(pin "1")
+				(pinfunction "IO1_1")
+				(pintype "bidirectional")
+			)
+		)
+		(net
+			(code "22")
+			(name "WIND_TX")
+			(class "Default")
+			(node
+				(ref "J1")
+				(pin "RX")
+				(pinfunction "RX_RX")
+				(pintype "input")
+			)
+			(node
+				(ref "U1")
+				(pin "4")
+				(pinfunction "IO4_4")
+				(pintype "bidirectional")
+			)
+		)
+		(net
+			(code "23")
+			(name "unconnected-(U1-IO9-Pad9)")
+			(class "Default")
+			(node
+				(ref "U1")
+				(pin "9")
+				(pinfunction "IO9_9")
+				(pintype "bidirectional")
+			)
+		)
+		(net
+			(code "24")
+			(name "unconnected-(U1-IO12-Pad12)")
+			(class "Default")
+			(node
+				(ref "U1")
+				(pin "12")
+				(pinfunction "IO12_12")
+				(pintype "bidirectional")
+			)
+		)
+		(net
+			(code "25")
+			(name "unconnected-(U1-IO13-Pad13)")
+			(class "Default")
+			(node
+				(ref "U1")
+				(pin "13")
+				(pinfunction "IO13_13")
+				(pintype "bidirectional")
+			)
+		)
+		(net
+			(code "26")
+			(name "unconnected-(U1-IO15-Pad15)")
+			(class "Default")
+			(node
+				(ref "U1")
+				(pin "15")
+				(pinfunction "IO15_15")
+				(pintype "bidirectional")
+			)
+		)
+		(net
+			(code "27")
+			(name "unconnected-(U1-IO16-Pad16)")
+			(class "Default")
+			(node
+				(ref "U1")
+				(pin "16")
+				(pinfunction "IO16_16")
+				(pintype "bidirectional")
+			)
+		)
+		(net
+			(code "28")
+			(name "unconnected-(U1-IO17-Pad17)")
+			(class "Default")
+			(node
+				(ref "U1")
+				(pin "17")
+				(pinfunction "IO17_17")
+				(pintype "bidirectional")
+			)
+		)
+		(net
+			(code "29")
+			(name "unconnected-(U1-Pad5V)")
+			(class "Default")
+			(node
+				(ref "U1")
+				(pin "5V")
+				(pinfunction "5V_5V")
+				(pintype "power_in")
+			)
+		)
+		(net
+			(code "30")
+			(name "unconnected-(U2-PadCLK)")
+			(class "Default")
+			(node
+				(ref "U2")
+				(pin "CLK")
+				(pinfunction "CLK_CLK")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "31")
+			(name "unconnected-(U3-PadCSB)")
+			(class "Default")
+			(node
+				(ref "U3")
+				(pin "CSB")
+				(pinfunction "CSB_CSB")
+				(pintype "input")
+			)
+		)
+		(net
+			(code "32")
+			(name "unconnected-(U3-PadSDO)")
+			(class "Default")
+			(node
+				(ref "U3")
+				(pin "SDO")
+				(pinfunction "SDO_SDO")
+				(pintype "bidirectional")
+			)
+		)
+	)
+)
