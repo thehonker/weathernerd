@@ -1,46 +1,108 @@
 (kicad_symbol_lib
-	(version 20231120)
+	(version 20251024)
 	(generator "kicad_symbol_editor")
-	(generator_version "9.0")
+	(generator_version "10.0")
 	(symbol "ESP32-C6-SuperMini"
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
+		(in_pos_files yes)
+		(duplicate_pin_numbers_are_jumpers no)
 
 		(property "Reference" "U"
 			(at -15.24 17.78 0)
-			(effects (font (size 1.27 1.27)))
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
 		)
 		(property "Value" "ESP32-C6-SuperMini"
 			(at 15.24 17.78 0)
-			(effects (font (size 1.27 1.27)))
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
 		)
 		(property "Footprint" "weathernerd:ESP32-C6-SuperMini"
 			(at 0 -20.32 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
 		)
 		(property "Datasheet" "https://www.espboards.dev/esp32/esp32-c6-super-mini/"
 			(at 0 -22.86 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
 		)
 		(property "Description" "ESP32-C6 Super Mini, WiFi 6, BLE 5.3, Zigbee, Thread, 22 GPIO, 4MB flash"
 			(at 0 -25.4 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
 		)
 		(property "ki_keywords" "ESP32 ESP32-C6 SuperMini WiFi Bluetooth Zigbee Thread RISC-V"
 			(at 0 0 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
 		)
 		(property "ki_fp_filters" "ESP32*C6*SuperMini*"
 			(at 0 0 0)
-			(effects (font (size 1.27 1.27))) (hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
 		)
 
 		(symbol "ESP32-C6-SuperMini_0_1"
-			(rectangle (start -12.7 15.24) (end 12.7 -15.24)
-				(stroke (width 0.254) (type default))
-				(fill (type background))
-				(uuid "13ef378b-4660-43a2-b450-fab2c2447beb")
+			(rectangle
+				(start -12.7 15.24)
+				(end 12.7 -15.24)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type background)
+				)
 			)
 		)
 		(symbol "ESP32-C6-SuperMini_1_1"
@@ -48,265 +110,433 @@
 				(at -15.24 12.7 0)
 				(length 2.54)
 				(name "IO16"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
 				(number "16"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
-				(uuid "ab10ac97-a9e7-4ef0-a7d2-9791966b9afa")
 			)
 			(pin bidirectional line
 				(at -15.24 10.16 0)
 				(length 2.54)
 				(name "IO17"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
 				(number "17"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
-				(uuid "7977261b-7776-4b03-8ab3-8ee812e87b06")
 			)
 			(pin bidirectional line
 				(at -15.24 7.62 0)
 				(length 2.54)
 				(name "IO0"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
 				(number "0"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
-				(uuid "e04786e8-6cb9-4e9e-a958-dee8b4fdc7c5")
 			)
 			(pin bidirectional line
 				(at -15.24 5.08 0)
 				(length 2.54)
 				(name "IO1"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
 				(number "1"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
-				(uuid "772732ab-0ffd-4d4c-8b22-c33313ed093e")
 			)
 			(pin bidirectional line
 				(at -15.24 2.54 0)
 				(length 2.54)
 				(name "IO2"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
 				(number "2"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
-				(uuid "f8960b57-1b6b-4dd8-9f35-68751969c160")
 			)
 			(pin bidirectional line
 				(at -15.24 0 0)
 				(length 2.54)
 				(name "IO3"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
 				(number "3"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
-				(uuid "ec4c216a-d4e6-4091-be73-7f91b270d360")
 			)
 			(pin bidirectional line
 				(at -15.24 -2.54 0)
 				(length 2.54)
 				(name "IO4"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
 				(number "4"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
-				(uuid "15a691ef-f035-46c4-bf72-0467f9ba2a5d")
 			)
 			(pin bidirectional line
 				(at -15.24 -5.08 0)
 				(length 2.54)
 				(name "IO5"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
 				(number "5"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
-				(uuid "8a983b77-149d-4ed2-8411-fedac77d7d28")
 			)
 			(pin bidirectional line
 				(at -15.24 -7.62 0)
 				(length 2.54)
 				(name "IO6"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
 				(number "6"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
-				(uuid "54400190-9df5-423e-b3a8-acb2cd58caec")
 			)
 			(pin bidirectional line
 				(at -15.24 -10.16 0)
 				(length 2.54)
 				(name "IO7"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
 				(number "7"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
-				(uuid "8adff92f-3ce0-435f-bcf8-ef7c7e159212")
 			)
 			(pin bidirectional line
 				(at -15.24 -12.7 0)
 				(length 2.54)
 				(name "IO23"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
 				(number "23"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
-				(uuid "2c42cd3e-09ed-47c9-a329-acc7506909f5")
 			)
 			(pin bidirectional line
 				(at -15.24 -15.24 0)
 				(length 2.54)
 				(name "IO22"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
 				(number "22"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
-				(uuid "d2d916b8-944b-49ca-9e8f-a306658af211")
 			)
 			(pin power_in line
 				(at 10.16 12.7 180)
 				(length 2.54)
 				(name "5V"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
 				(number "5V"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
-				(uuid "5d57bc23-df21-46ef-b6b2-9748e3dc65d5")
 			)
 			(pin power_in line
 				(at 10.16 10.16 180)
 				(length 2.54)
 				(name "GND"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
 				(number "GND"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
-				(uuid "c65d7cc8-50be-4ed7-b3b2-d28fd6d46c8e")
 			)
 			(pin power_in line
 				(at 10.16 7.62 180)
 				(length 2.54)
 				(name "3V3"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
 				(number "3V3"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
-				(uuid "450fedeb-5dc1-4ab6-af34-fe3b5c0870cf")
 			)
 			(pin bidirectional line
 				(at 10.16 5.08 180)
 				(length 2.54)
 				(name "IO20"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
 				(number "20"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
-				(uuid "d4dbb52b-1b4a-4e7f-a50c-91a98cee09bd")
 			)
 			(pin bidirectional line
 				(at 10.16 2.54 180)
 				(length 2.54)
 				(name "IO19"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
 				(number "19"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
-				(uuid "c46fc263-0493-4684-b136-557cfffaefd8")
 			)
 			(pin bidirectional line
 				(at 10.16 0 180)
 				(length 2.54)
 				(name "IO18"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
 				(number "18"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
-				(uuid "68284c52-c3c2-413c-ada7-4aefc384f84c")
 			)
 			(pin bidirectional line
 				(at 10.16 -2.54 180)
 				(length 2.54)
 				(name "IO15"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
 				(number "15"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
-				(uuid "62f6ff70-a050-47dd-a65f-2870413ad58a")
 			)
 			(pin bidirectional line
 				(at 10.16 -5.08 180)
 				(length 2.54)
 				(name "IO14"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
 				(number "14"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
-				(uuid "98d2d43e-7315-4b11-a84d-300266fcf086")
 			)
 			(pin bidirectional line
 				(at 10.16 -7.62 180)
 				(length 2.54)
 				(name "IO9"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
 				(number "9"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
-				(uuid "374fe3be-524a-4564-b30d-31e1a5564716")
 			)
 			(pin bidirectional line
 				(at 10.16 -10.16 180)
 				(length 2.54)
 				(name "IO8"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
 				(number "8"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
-				(uuid "5c82d49a-bdb8-420c-8cf0-60446f0e470c")
 			)
 			(pin bidirectional line
 				(at 10.16 -12.7 180)
 				(length 2.54)
 				(name "IO12"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
 				(number "12"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
-				(uuid "cbb098fa-4987-4d1e-8b15-4916e1b6b50a")
 			)
 			(pin bidirectional line
 				(at 10.16 -15.24 180)
 				(length 2.54)
 				(name "IO13"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
 				(number "13"
-					(effects (font (size 1.27 1.27)))
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
 				)
-				(uuid "613143e8-3a06-44a1-8bfa-980a6f37a43c")
 			)
 		)
 	)
