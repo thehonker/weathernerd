@@ -5,3 +5,4 @@ local-storage/pcb/weathernerd-hub/*.bak
 local-storage/pcb/weathernerd-hub/_autosave-weathernerd-hub.*
 local-storage/pcb/weathernerd-hub/.kicad-mcp
 local-storage/pcb/weathernerd-hub/weathernerd-hub-backups
+local-storage/pcb/weathernerd-hub/libs/weathernerd.bak
