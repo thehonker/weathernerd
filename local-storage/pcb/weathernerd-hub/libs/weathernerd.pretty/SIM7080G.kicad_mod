@@ -1,0 +1,118 @@
+(footprint "SIM7080G"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "SIM7080G Cat-M1/NB-IoT LTE modem breakout, 8-pin 2.54mm single row header")
+	(tags "SIM7080G LTE Cat-M1 NB-IoT GNSS modem breakout")
+
+	(property "Reference" "U"
+		(at 0 -14.5 0)
+		(layer "F.SilkS")
+		(uuid "8a3631c5-ef12-4a33-ab9c-8f716106871d")
+		(effects (font (size 1.27 1.27) (thickness 0.15)))
+	)
+	(property "Value" "SIM7080G"
+		(at 0 14.5 0)
+		(layer "F.Fab")
+		(uuid "0b52915a-fe91-42de-b3d5-6cad10b56fb4")
+		(effects (font (size 1.27 1.27) (thickness 0.15)))
+	)
+	(property "Datasheet" "https://www.simcom.com/product/SIM7080G.html"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "6d0d3dff-0d34-4f96-9386-191ebbb49748")
+		(effects (font (size 1.27 1.27) (thickness 0.15)))
+	)
+	(property "Description" "SIM7080G Cat-M1 + NB-IoT LTE modem breakout, 8-pin, GNSS"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "fde7607d-a779-45f6-b377-eb134bd5ac10")
+		(effects (font (size 1.27 1.27) (thickness 0.15)))
+	)
+
+	(attr through_hole)
+
+	# Fab layer
+	(fp_line (start -17.5 -12.5) (end 17.5 -12.5) (stroke (width 0.1) (type solid)) (layer "F.Fab") (uuid "eb6c2c69-6e75-4c85-82b4-c39fdce2fd0c"))
+	(fp_line (start 17.5 -12.5) (end 17.5 12.5) (stroke (width 0.1) (type solid)) (layer "F.Fab") (uuid "6b6e8d01-ade0-4bc9-853d-37d51b4a43ae"))
+	(fp_line (start 17.5 12.5) (end -17.5 12.5) (stroke (width 0.1) (type solid)) (layer "F.Fab") (uuid "b01ebc1e-edd4-471a-8ccf-deef03d8aac7"))
+	(fp_line (start -17.5 12.5) (end -17.5 -12.5) (stroke (width 0.1) (type solid)) (layer "F.Fab") (uuid "adf96b4e-8aa7-4d5c-904a-5ec092094d3b"))
+
+	# SilkS layer
+	(fp_line (start -17.62 -12.62) (end 17.62 -12.62) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (uuid "fc6f8104-1c9a-4180-9939-4c7e85011b54"))
+	(fp_line (start 17.62 -12.62) (end 17.62 12.62) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (uuid "5783840e-8f80-4903-b2e8-4fdda13ca44c"))
+	(fp_line (start 17.62 12.62) (end -17.62 12.62) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (uuid "28dd6fd1-7891-4c42-89a6-d033625bac28"))
+	(fp_line (start -17.62 12.62) (end -17.62 -12.62) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (uuid "752c12fe-a8d5-4b92-a7b1-d695d5d539ce"))
+	(fp_circle (center -10.39 -9.96) (end -10.09 -9.96) (stroke (width 0.12) (type solid)) (layer "F.SilkS") (fill solid) (uuid "701893a4-e42e-486a-b24d-d4d085f8dbe1"))
+
+	# Courtyard
+	(fp_line (start -18 -13) (end 18 -13) (stroke (width 0.05) (type solid)) (layer "F.CrtYd") (uuid "d8e82474-0662-41dc-9f31-71a5f90eb1ef"))
+	(fp_line (start 18 -13) (end 18 13) (stroke (width 0.05) (type solid)) (layer "F.CrtYd") (uuid "2062ef19-fc5b-4361-b35e-2e5ff52cfc3b"))
+	(fp_line (start 18 13) (end -18 13) (stroke (width 0.05) (type solid)) (layer "F.CrtYd") (uuid "60287eca-1784-4285-a716-5c8a78557bfb"))
+	(fp_line (start -18 13) (end -18 -13) (stroke (width 0.05) (type solid)) (layer "F.CrtYd") (uuid "b652df61-ccf8-4c02-85f7-007364ce79ae"))
+
+	(fp_text user "${REFERENCE}" (at 0 0 0) (layer "F.Fab") (uuid "3d386499-f716-494b-9478-034aec2d05a0")
+		(effects (font (size 1.27 1.27) (thickness 0.15)))
+	)
+
+	(pad "VBAT" thru_hole roundrect
+		(at -8.89 -9.96)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(roundrect_rratio 0.147059)
+		(uuid "dec4daed-1423-4ebb-881c-1b2a3564fa2a")
+	)
+	(pad "GND" thru_hole oval
+		(at -6.35 -9.96)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "62213e11-6519-43c1-9937-1ecff1f6b825")
+	)
+	(pad "VCC" thru_hole oval
+		(at -3.81 -9.96)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "f82f179c-9caa-4676-ab3a-5fbf3d76212a")
+	)
+	(pad "GND2" thru_hole oval
+		(at -1.27 -9.96)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "94ac9d58-823c-4f3d-8866-c3ae9cf30c79")
+	)
+	(pad "RXD" thru_hole oval
+		(at 1.27 -9.96)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "b8ee30c8-2ac0-4426-b5c2-ff13ce6471cb")
+	)
+	(pad "TXD" thru_hole oval
+		(at 3.81 -9.96)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "5eca68cf-9329-46eb-b05b-18530d60860b")
+	)
+	(pad "DTR" thru_hole oval
+		(at 6.35 -9.96)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "b1708c33-b806-41e1-96f2-258d27d97574")
+	)
+	(pad "PWR" thru_hole oval
+		(at 8.89 -9.96)
+		(size 1.7 1.7)
+		(drill 1.0)
+		(layers "*.Cu" "*.Mask")
+		(uuid "39fdb68e-1cc5-4a68-b84d-f33cad6b2cda")
+	)
+
+	(embedded_fonts no)
+)

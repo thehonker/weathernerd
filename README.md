@@ -17,9 +17,11 @@ A battery-powered, 6-month-unattended weather station for remote deployment. No 
 - **Datalogger:** ESP32-C6 SuperMini, running **ESP-IDF v6.1** (not Arduino — the LP RISC-V coprocessor requires ESP-IDF's `ulp_embed_binary` build system). LP core handles the 5s wind sampling loop while the main core sleeps (~7 µA deep sleep). Main core wakes every 1 min for temp/RH/pressure, rain ADC, and SD card flush.
 - **Sensors:** BME280 (temp/RH/pressure, I2C), DS3231 RTC (±2 ppm, I2C), DIY piezo disdrometer (ADC, rain rate).
 - **Storage:** 8 GB industrial microSD via SPI. Two daily CSV files: `YYYY-MM-DD-wind.csv` (5s samples) and `YYYY-MM-DD-env.csv` (1 min samples). ~168 MB for 6 months.
-- **Power:** 2× ER34615 Li-SOCl2 D-cells (38 Ah, -55°C rated). Total system draw ~0.10 mA. Battery lasts decades — power is a non-issue.
-- **Retrieval:** Flip a switch on the enclosure → ESP32-C6 powers on OLED display + starts WiFi 6 soft-AP. Connect with phone/laptop, browse and download CSV files. Rotary encoder + OLED for on-device UI.
-- **Cost:** ~$99-143 total BOM.
+- **Power:** 2× ER34615 Li-SOCl2 D-cells (38 Ah, -55°C rated). Total system draw ~0.55 mA (16× battery headroom over 6 months). Battery lasts years — power is a non-issue.
+- **Uplink:** SIM7080G Cat-M1 modem on AT&T LTE-M network. MQTT uplink every 30 min with buffered data. Daily GPS fix via SIM7080G GNSS syncs the DS3231 RTC, eliminating long-term drift. PSM sleep (~3 µA module) between uploads.
+- **Retrieval:** Press CON button on the enclosure → ESP32-C6 powers on OLED display + starts WiFi 6 soft-AP. Connect with phone/laptop, browse and download CSV files. Rotary encoder + OLED for on-device UI. LTE-M uplink provides live data during deployment — WiFi is for full bulk download on physical retrieval.
+- **Antenna:** Directional Yagi (700–2700 MHz) aimed at nearest AT&T tower for LTE-M. Passive GNSS patch antenna (25×25mm) for daily GPS RTC sync.
+- **Cost:** ~$214-283 total BOM.
 
 ### Home Station (future)
 
@@ -46,7 +48,8 @@ weathernerd/
     ├── notes/
     │   ├── hardware-design.md   ← pin allocation, wiring, BOM, component selection
     │   ├── power-budget.md      ← current draw analysis, battery sizing
-    │   └── storage-budget.md    ← data volume, SD card selection, file strategy
+    │   ├── storage-budget.md    ← data volume, SD card selection, file strategy
+    │   └── lte-uplink.md        ← LTE-M modem options, antenna, SIM, power impact
     └── firmware/
         ├── windnerd-stm32g031f8/  ← custom WindNerd Core firmware (⚠️ WIP, untested)
         │   ├── README.md           ← firmware docs, build & flash instructions
@@ -83,6 +86,7 @@ weathernerd/
 Start with [hardware-design.md](local-storage/notes/hardware-design.md) for the full system overview, pin allocation, and BOM.
 [power-budget.md](local-storage/notes/power-budget.md) covers current draw and battery life.
 [storage-budget.md](local-storage/notes/storage-budget.md) covers data volumes and SD card selection.
+[lte-uplink.md](local-storage/notes/lte-uplink.md) covers LTE-M modem selection, antenna, SIM, and power budget impact.
 
 ## Firmware
 
@@ -113,11 +117,12 @@ ESP32-C6 datalogger firmware built with **ESP-IDF v6.1**. The LP RISC-V coproces
 
 - **WindNerd custom firmware** — factory firmware draws 0.6 mA. Custom STOP mode + on-demand sampling drops it to ~0.04 mA. 7× total system power reduction.
 - **ESP32-C6 over ESP32-C3** — the C6's LP RISC-V coprocessor handles the 5s sampling loop while the main core sleeps. The C3 has no LP core, so the main core would wake every 5s, roughly doubling power consumption. This required switching from Arduino to ESP-IDF — Arduino-esp32 doesn't support LP core programming.
-- **No solar** — at 0.10 mA average, the battery alone lasts decades. Solar adds complexity and failure modes for zero benefit.
+- **No solar** — at 0.55 mA average, the battery alone has 16× headroom over 6 months. Solar adds complexity and failure modes for zero benefit.
 - **Two data streams** — wind+rain at 5s (LP core) and temp/RH/pressure at 1 min (main core). Separate daily CSV files. Temp changes slowly; 1 min is plenty.
 - **CON button + OLED** — the station sleeps with zero UI. A momentary button (CON) wakes the main core via GPIO interrupt, firmware powers on the OLED via MOSFET (GPIO5), and starts a WiFi AP for data retrieval. Zero power when off. BAK button at top-level menu returns to low-power mode. 60s inactivity timeout as backup. A future "Halt" option (full system stop, power cycle to resume) may be added to both the OLED menu and WiFi portal.
 - **SPI over SDIO for SD card** — GPIO18–23 are the ESP32-C6's native SDIO peripheral, but 4-bit SDIO needs 6 pins and would eat GPIO20/21 (encoder) and GPIO22/23 (CON/BAK buttons). SPI mode uses 4 pins and the data rate is trivial (~838 KB/day, 70-byte appends once per minute). The SD card is asleep 55s out of every 60s — SDIO's speed advantage is irrelevant. The saved pins keep the encoder and buttons on safe, non-strapping GPIO.
 - **DIY piezo disdrometer** — no moving parts, $2 in parts, logs raw ADC peaks. Calibrate later against a reference gauge. v1 has no op-amp (simplest); v2 adds OPA376 if drizzle sensitivity is needed.
+- **SIM7080G LTE-M uplink** — Cat-M1 on AT&T (the only carrier with coverage at the deployment site). PSM sleep at ~3 µA between 30-min MQTT uploads. LC filter on VBAT handles Cat-M1 TX spikes from the high-internal-resistance Li-SOCl2 battery. Daily GPS fix via the modem's GNSS receiver syncs the DS3231 RTC, eliminating ±5 min drift over 6 months. NB-IoT is dead on AT&T (sunset Q1 2025) — Cat-M1 is the only viable low-power IoT option.
 
 ## License
 

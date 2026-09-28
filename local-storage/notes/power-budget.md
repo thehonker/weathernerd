@@ -2,7 +2,7 @@
 
 **Date:** 2026-09-22
 **Author:** Coilette (for goos)
-**Status:** Updated — ESP32-C6 SuperMini, custom WindNerd firmware, on-demand sampling
+**Status:** Updated — SIM7080G LTE-M uplink folded into v1
 **Related:** [storage-budget.md](storage-budget.md)
 
 ---
@@ -14,7 +14,7 @@
 - **RTC:** DS3231 (TCXO, ±2 ppm, CR1220 backup) on shared I2C with BME280
 - **Storage:** MicroSD card (industrial, FAT32, daily CSV files — two streams: wind/rain at 5s, temp/RH/pressure at 1 min)
 - **Sample rate:** 5 seconds (wind + rain), 1 minute (temp/RH/pressure)
-- **Data retrieval:** ESP32 WiFi soft-AP → connect phone/laptop → download CSVs via CON button wake
+- **Data retrieval:** SIM7080G LTE-M MQTT uplink (30-min intervals) + ESP32 WiFi soft-AP for full CSV download on retrieval
 - **Display + UI:** SH1106 1.3" OLED + EC11 rotary encoder + CON/BAK buttons on shared I2C + GPIO. Power-gated via MOSFET (GPIO5) — zero current in sleep. Only active when CON button wakes the main core.
 - **No chip swaps.** STM32G031F8 stays as-is with custom firmware. ESP32-C6 handles everything beyond wind.
 
@@ -42,7 +42,7 @@ Selected from available boards (ESP32-C3 SuperMini, ESP32-C6 SuperMini, Xiao ESP
 
 WiFi 6 also gives better range for the spring data-retrieval workflow — press CON button, connect, download CSVs.
 
-### GPIO allocation (16 pins used, 22 available, 5 free)
+### GPIO allocation (18 pins used, 22 available, 3 free)
 
 | Function | Pins | Silkscreen |
 |---|---|---|
@@ -51,13 +51,15 @@ WiFi 6 also gives better range for the spring data-retrieval workflow — press 
 | UART RX from WindNerd | 1 | 4 |
 | I2C (BME280 + DS3231 + OLED: SDA + SCL) | 2 | 6, 7 |
 | SPI (SD card: MOSI + MISO + SCK + CS) | 4 | 2, 3, 18, 19 |
-| EC11 rotary encoder (TRA + TRB + PSH) | 3 | 14, 20, 21 |
-| CON button (wake + confirm) | 1 | 22 |
-| BAK button (back + sleep) | 1 | 23 |
+| MCP23008 I2C expander INT | 1 | 14 |
 | OLED VCC MOSFET gate | 1 | 5 |
-| **Total** | **13** | |
+| Rain peak-hold reset (2N7002 gate) | 1 | 8 |
+| SIM7080G UART (TX + RX) | 2 | 16, 17 |
+| SIM7080G DTR (PSM control) | 1 | 15 |
+| SIM7080G PWR (power key) | 1 | 9 |
+| **Total** | **18** | |
 
-5 free: 8, 9, 15, 16(TX), 17(RX). DS3231 shares I2C with BME280 + OLED (addresses 0x68, 0x76, 0x3C — no conflict).
+3 free (IO20, IO22, IO23). Encoder + buttons moved to MCP23008 I2C expander (address 0x20) on shared I2C bus. MCP23008 INT → GPIO14 wakes ESP32 on any pin change. GPIO10/GPIO11 don't exist on SuperMini. GPIO21 does not exist as a pad on the SuperMini board.
 
 ---
 
@@ -145,14 +147,17 @@ Note: the C6's deep sleep current (~7 µA) is significantly lower than older ESP
 | ESP32-C6 SuperMini (deep sleep + LP core, main core wake 1/min) | ~0.018 mA | ~0.018 mA | LP core handles 5s WindNerd trigger + UART read + ADC. See deep sleep caveat above. |
 | BME280 (I2C, read every 1 min by main core) | ~0.005 mA | ~0.005 mA | 3.6 µA sleep + active avg |
 | DS3231 RTC (I2C, read every 1 min by main core) | ~0.001 mA | ~0.001 mA | 0.8 µA battery-backup mode |
+| MCP23008 I2C expander (standby) | ~0.001 mA | ~0.001 mA | ~1 µA standby, only active during interactive mode |
 | Piezo rain v1 (bias divider only, sample every 5s via LP core) | ~0.0002 mA | — | 2× 10MΩ divider (~0.16 µA) |
 | Piezo rain v2 (OPA376 op-amp, sample every 5s via LP core) | — | ~0.0011 mA | 0.9 µA op-amp + 0.16 µA divider |
 | SD card (write every 1 min, sleep otherwise) | ~0.01 mA | ~0.01 mA | Flush buffered 12 samples |
 | Inter-board GPIO + UART pull-ups | ~0.01 mA | ~0.01 mA | Trigger line + UART idle |
 | Regulator/quiescent (LDO) | ~0.001 mA | ~0.001 mA | HT7333 quiescent |
-| **Total estimated** | **~0.10 mA** | **~0.10 mA** | |
+| SIM7080G modem (PSM sleep, 30-min uploads) | ~0.40 mA | ~0.40 mA | 3 µA PSM + board overhead + 30s TX every 30 min. See [lte-uplink.md](lte-uplink.md). |
+| SIM7080G GNSS (daily GPS RTC sync, ~45s fix) | ~0.052 mA | ~0.052 mA | 100 mA × 45s / 86400s averaged. Corrects DS3231 drift daily. |
+| **Total estimated** | **~0.55 mA** | **~0.55 mA** | |
 
-OLED, encoder, and buttons draw zero current in sleep (OLED power-gated via MOSFET on GPIO5, encoder/buttons are passive inputs with pull-ups that only wake the main core on interrupt).
+OLED, encoder, and buttons draw zero current in sleep (OLED power-gated via MOSFET on GPIO5, encoder/buttons are on MCP23008 I2C expander which sleeps at ~1 µA, INT line on GPIO14 only wakes main core on pin change).
 
 ### Comparison: factory vs custom WindNerd firmware
 
@@ -161,16 +166,17 @@ OLED, encoder, and buttons draw zero current in sleep (OLED power-gated via MOSF
 | Factory firmware (low power, 0.6 mA) | 0.6 mA | 0.81 mA | 3.55 Ah |
 | **Custom firmware (STOP, on-demand)** | **~0.04 mA** | **~0.10 mA** | **0.44 Ah** |
 
-Custom firmware + C6 LP core cuts total system power by **~7×**. The WindNerd goes from being the dominant power consumer (74% of total) to the largest at 36%, with the ESP32-C6 now a minor contributor (16%).
+Custom firmware + C6 LP core cuts total system power by **~7×** (without modem). The WindNerd goes from being the dominant power consumer (74% of total without modem) to the largest at 36%. With the SIM7080G modem added, the modem dominates the power budget at ~73% of total, but absolute draw is still tiny — 0.55 mA avg, 16× battery headroom.
 
 ### Realistic estimates
 
 | Scenario | Est. avg current | 6-month Ah |
 |---|---|---|
-| Conservative (custom WindNerd + ESP32-C6 deep sleep) | 0.10 mA | **0.44 Ah** |
-| With deep sleep caveat (ESP32-C6 at 30 µA instead of 7 µA) | 0.12 mA | **0.53 Ah** |
-| Optimistic (tuned STOP modes, minimal quiescent) | 0.07 mA | **0.31 Ah** |
-| With LTE modem added later (sleep between uploads) | 5.5–11.5 mA | **24–50 Ah** |
+| v1 without modem (sensors only) | 0.10 mA | **0.44 Ah** |
+| **v1 with SIM7080G, 30-min uploads + daily GPS sync** | **0.55 mA** | **2.4 Ah** |
+| v1 with SIM7080G, 1-hour uploads + daily GPS sync | 0.38 mA | **1.5 Ah** |
+| v1 with SIM7080G, 2-hour uploads + daily GPS sync | 0.29 mA | **1.2 Ah** |
+| Pessimistic (ESP32-C6 at 30 µA + modem board at 1.2 mA + GPS) | 1.70 mA | **7.5 Ah** |
 
 ---
 
@@ -178,26 +184,24 @@ Custom firmware + C6 LP core cuts total system power by **~7×**. The WindNerd g
 
 ### No solar (6 months, pure battery)
 
-| Battery | Capacity | Cold rating | 6-month draw (0.10 mA) | Verdict |
+| Battery | Capacity | Cold rating | 6-month draw (0.55 mA) | Verdict |
 |---|---|---|---|---|
-| 2× ER34615 Li-SOCl2 D-cell (parallel) | ~38 Ah | -55°C ✅ | 0.44 Ah | ✅ **80+ year runtime** |
-| 1× ER34615 Li-SOCl2 D-cell | ~19 Ah | -55°C ✅ | 0.44 Ah | ✅ **40+ year runtime** |
-| Li-SOCl2 AA-cell | ~2.4 Ah | -55°C ✅ | 0.44 Ah | ✅ 912 days — 2.5× the mission duration |
-| LiFePO4 18650 ×1 | 1.5 Ah | -20°C ⚠️ | 0.44 Ah | ✅ 569 days (with cold derating ~398 days — still fine) |
-| LiFePO4 18650 ×2 (1S2P) | 3.0 Ah | -20°C ⚠️ | 0.44 Ah | ✅ 1138 days |
+| 2× ER34615 Li-SOCl2 D-cell (parallel) | ~38 Ah | -55°C ✅ | 2.4 Ah | ✅ **16× headroom** |
+| 1× ER34615 Li-SOCl2 D-cell | ~19 Ah | -55°C ✅ | 2.4 Ah | ✅ **7.9× headroom** |
+| Li-SOCl2 AA-cell | ~2.4 Ah | -55°C ✅ | 2.4 Ah | ⚠️ 175 days — too tight for cold derating. |
 
-With custom firmware + C6 LP core, even a single Li-SOCl2 AA-cell covers 6 months with 2.5× headroom. A single D-cell is 40× overkill. **We use 2× D-cells (38 Ah) for extreme cold derating and 80+ year theoretical runtime** — redundancy and voltage sag resistance in cold.
+With SIM7080G at 30-min uploads + daily GPS sync, the 2× D-cell battery (38 Ah) has 16× headroom. A single D-cell (19 Ah) still has 7.9×. The AA-cell is too tight once cold derating is considered.
 
-**Recommendation:** 2× ER34615 Li-SOCl2 D-cell in parallel (38 Ah total, -55°C rated). ~$20-30.
+**Recommendation:** 2× ER34615 Li-SOCl2 D-cell in parallel (38 Ah total, -55°C rated). ~$20-30. The oversizing is now justified by the LTE modem power draw + Cat-M1 TX spike delivery (LC filter + 300µF ceramic cap bank handles spikes, battery handles average).
 
 ### With small solar (optional)
 
-At 0.10 mA, even a tiny 0.5W panel is absurd overkill:
+At 0.55 mA, a tiny 0.5W panel is still overkill:
 - 0.5W panel in poor winter (1 hr effective sun → 0.5 Wh/day = ~42 mAh/day at 3.3V/12V)
-- Station needs ~2.4 mAh/day
-- Panel provides 16× headroom
+- Station needs ~13 mAh/day
+- Panel provides 3.2× headroom
 
-**Skip solar for v1.** Battery alone is simpler and lasts years.
+**Skip solar for v1.** Battery alone has 16× headroom. Solar adds complexity (charge controller, panel mount) for no benefit.
 
 ---
 
@@ -230,16 +234,17 @@ How the ESP32-C6 tells the WindNerd "give me a reading":
 
 ---
 
-## Future LTE Uplink
+## LTE Uplink (v1 — SIM7080G)
 
-When LTE is added, the ESP32-C6 drives an A7670X modem via UART. The WindNerd's custom firmware is unaffected — the ESP32-C6 still triggers wind reads at 5s and buffers data for upload.
+The ESP32-C6 drives a SIM7080G Cat-M1 modem via UART0 (GPIO16/17). The WindNerd's custom firmware is unaffected — the LP core still triggers wind reads at 5s. The main core wakes every 30 min, brings the modem out of PSM via DTR (GPIO15), sends buffered data via MQTT, then puts the modem back to PSM and returns to deep sleep.
 
-| Component | Added current | Notes |
+| Component | Current | Notes |
 |---|---|---|
-| A7670X modem (sleep between uploads) | ~5–11 mA | Upload every 2 min, modem sleeps otherwise |
-| Total system with LTE | 5.5–11.5 mA | |
+| SIM7080G modem (PSM sleep, 30-min uploads) | ~0.40 mA avg | 3 µA PSM + board overhead (~50 µA) + 30s TX every 30 min |
+| SIM7080G GNSS (daily GPS RTC sync) | ~0.052 mA avg | 100 mA × 45s / 86400s. Corrects DS3231 drift. |
+| Total system with LTE + GPS | ~0.55 mA | 16× battery headroom over 6 months |
 
-At 5.5–11.5 mA, a Li-SOCl2 D-cell lasts 69–145 days. Need solar or bigger battery for 6 months with LTE. Future problem — v1 is local storage only.
+See [lte-uplink.md](lte-uplink.md) for full modem analysis, antenna selection, SIM plan, and power calculations at various upload intervals.
 
 ---
 
@@ -253,13 +258,12 @@ At 5.5–11.5 mA, a Li-SOCl2 D-cell lasts 69–145 days. Need solar or bigger ba
 | **Sensors** | BME280 (I2C) + DS3231 RTC (I2C) + piezo rain (ADC), all on ESP32-C6 |
 | **Storage** | MicroSD card (8 GB industrial, FAT32, two daily CSV files: wind/rain 5s + temp/RH/pressure 1 min) |
 | **Sample rate** | 5s (wind + rain), 1 min (temp/RH/pressure) |
-| **Battery** | 2× ER34615 Li-SOCl2 D-cell (~38 Ah, -55°C, $20-30) — 80× headroom |
-| **Solar** | Skip for v1. Battery lasts years. |
-| **Data retrieval** | ESP32 WiFi soft-AP → phone downloads CSVs |
-| **Total avg current** | **~0.10 mA** (7× lower than factory firmware + ESP32) |
-| **6-month Ah** | 0.44 Ah (2× D-cell has 80× headroom) |
-| **Battery** | 2× ER34615 Li-SOCl2 D-cell (38 Ah, -55°C, $20-30) |
-| **Future LTE** | Add A7670X modem when ready. ESP32 has the ecosystem for it. |
+| **Battery** | 2× ER34615 Li-SOCl2 D-cell (~38 Ah, -55°C, $20-30) — 16× headroom |
+| **Solar** | Skip for v1. Battery has 16× headroom. |
+| **Data retrieval** | SIM7080G LTE-M MQTT uplink (30-min) + WiFi soft-AP for full CSV download |
+| **LTE modem** | SIM7080G Cat-M1, PSM sleep, 30-min MQTT uploads + daily GPS RTC sync. See [lte-uplink.md](lte-uplink.md). |
+| **Total avg current** | **~0.55 mA** (16× battery headroom) |
+| **6-month Ah** | 2.4 Ah (2× D-cell has 16× headroom) |
 
 ---
 
@@ -267,10 +271,10 @@ At 5.5–11.5 mA, a Li-SOCl2 D-cell lasts 69–145 days. Need solar or bigger ba
 
 1. **Clone WindNerd Core repo** — study library source, understand STOP mode + GPIO interrupt hooks
 2. **Write WindNerd custom firmware** — STOP mode sleep, GPIO wake, UART output on demand
-3. **Wire up ESP32-C6 SuperMini** — GPIO trigger to WindNerd, UART RX from WindNerd TX2, BME280 + DS3231 + OLED on shared I2C, piezo on ADC, SD card on SPI, EC11 encoder + CON/BAK buttons, OLED MOSFET gate (16 pins, 22 available, 5 free)
-4. **Write ESP32-C6 firmware** — LP core triggers WindNerd every 5s + reads UART + ADC, main core reads BME280/DS3231 + flushes SD every 1 min, WiFi 6 soft-AP for data retrieval
-5. **Measure actual sleep currents** — both boards. SuperMini dev board overhead (LEDs, LDOs) will inflate numbers. Desolder LEDs.
-6. **Select piezo rain sensor** — specific module with analog output
-7. **Enclosure design** — 3D-printed anemometer (WindNerd files) + weatherproof electronics box
-8. **Cold weather plan** — Li-SOCl2 battery, condensation management, icing
-9. **Field test** — deploy, verify, retrieve data via WiFi
+3. **Wire up ESP32-C6 SuperMini** — GPIO trigger to WindNerd, UART RX from WindNerd TX2, BME280 + DS3231 + OLED + MCP23008 on shared I2C, piezo on ADC, SD card on SPI, EC11 encoder + CON/BAK buttons via MCP23008 I2C expander (INT on GPIO14), OLED MOSFET gate, SIM7080G on UART0 + DTR + PWR (18 pins, 22 available, 3 free)
+4. **Write ESP32-C6 firmware** — LP core triggers WindNerd every 5s + reads UART + ADC, main core reads BME280/DS3231 + flushes SD every 1 min, SIM7080G MQTT uplink every 30 min + daily GPS RTC sync, WiFi 6 soft-AP for data retrieval
+5. **Measure actual sleep currents** — both boards + SIM7080G PSM. SuperMini dev board overhead (LEDs, LDOs) will inflate numbers. Desolder LEDs.
+6. **Test SIM7080G** — AT&T Cat-M1 coverage at site, PSM negotiation, VBAT sag with LC filter, 1.8V SIM, GNSS fix
+7. **Enclosure design** — 3D-printed anemometer (WindNerd files) + weatherproof box + Stevenson screen + LTE antenna mast + GNSS patch + lightning arrestor
+8. **Cold weather plan** — Li-SOCl2 battery, condensation management, icing, modem temp range
+9. **Field test** — deploy, verify LTE-M uplink + GPS sync + WiFi retrieval

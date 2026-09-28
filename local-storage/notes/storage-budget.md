@@ -14,7 +14,7 @@
 - **RTC:** DS3231 (TCXO, ±2 ppm, CR1220 backup) on shared I2C with BME280
 - **Storage:** MicroSD card (industrial, FAT32, two daily CSV files)
 - **Sample rate:** 5 seconds (wind + rain), 1 minute (temp/RH/pressure)
-- **Retrieval:** ESP32-C6 WiFi 6 soft-AP → connect phone/laptop → download CSV via CON button wake
+- **Retrieval:** SIM7080G LTE-M MQTT uplink (30-min intervals) for live data + ESP32-C6 WiFi 6 soft-AP for full CSV download on physical retrieval. Daily GPS sync of DS3231 RTC via SIM7080G GNSS.
 
 ---
 
@@ -192,6 +192,15 @@ Every 1 min:
   → Append 1 row to YYYY-MM-DD-env.csv on SD
   → Go back to deep sleep
 
+Every 30 min:
+  ESP32-C6 main core wakes SIM7080G from PSM via DTR (GPIO15)
+  → Modem connects to AT&T LTE-M network
+  → MQTT publish buffered wind + rain + env data to broker
+  → Modem back to PSM, main core back to deep sleep
+
+Daily:
+  ESP32-C6 main core wakes SIM7080G → enables GNSS → GPS fix → sync DS3231 RTC → disables GNSS → modem back to PSM
+
 On demand (spring retrieval):
   Phone connects to ESP32-C6 WiFi 6 soft-AP
   → Browse/download daily CSV files (wind + env)
@@ -214,8 +223,9 @@ On demand (spring retrieval):
 | 6-month storage (total) | ~168 MB |
 | SD card | 8 GB industrial microSD ($10-15) |
 | Write frequency | Flush to SD every 1 minute |
-| Data retrieval | ESP32-C6 WiFi 6 soft-AP → download CSV files via phone |
+| Data retrieval | SIM7080G LTE-M MQTT uplink (30-min) + WiFi 6 soft-AP for full CSV download |
+| RTC sync | Daily GPS fix via SIM7080G GNSS (eliminates DS3231 drift) |
 | Power loss risk | Lose at most 1 minute of data |
-| RTC | DS3231 (±2 ppm, ±5 min over 6 months, CR1220 backup) |
+| RTC | DS3231 (±2 ppm, ±5 min over 6 months uncorrected, daily GPS sync via SIM7080G GNSS, CR1220 backup) |
 
 **Storage is a non-issue.** A $10 SD card holds 36× what you need. The real work is firmware.
